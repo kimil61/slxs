@@ -1,0 +1,31 @@
+# =============================================
+# 色狼下山 — 스크립트+설정 전용 .gitignore
+# Unity 프로젝트 전체가 아닌 핵심 파일만 추적
+# =============================================
+
+# 기본: 전부 무시
+*
+
+# 추적할 파일들만 허용 ─────────────────────
+
+# 스크립트
+!Assets/Scripts/**
+!Assets/Scripts/**/*.cs
+!Assets/Scripts/**/*.cs.meta
+
+# Input Actions
+!Assets/*.inputactions
+!Assets/*.inputactions.meta
+
+# 프로젝트 설정 (Input System, Physics, Quality 등)
+!ProjectSettings/
+!ProjectSettings/*.asset
+
+# 개발 로그 & 문서
+!DEVLOG.md
+!README.md
+!.gitignore
+
+# 폴더 구조 유지용
+!Assets/
+!Assets/Scripts/
