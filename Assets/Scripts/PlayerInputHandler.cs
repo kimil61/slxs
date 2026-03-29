@@ -30,7 +30,7 @@ public class PlayerInputHandler : MonoBehaviour
         controls.GamePlay.Interact.performed += ctx => InteractPressed = true;
     }
 
-    private void Onsable()
+    private void OnDisable()
     {
         controls.Disable();
     }
