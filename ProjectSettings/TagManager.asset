@@ -5,11 +5,12 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - InteractableLayer
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Item
   - Water
   - UI
   - Ground

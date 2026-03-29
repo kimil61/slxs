@@ -37,8 +37,9 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         cameraTransform = Camera.main.transform;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // 아래 두 줄 삭제 — CursorManager가 처리
+        // Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.visible = false;
     }
 
     private void Update()
