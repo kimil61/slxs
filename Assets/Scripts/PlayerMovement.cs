@@ -24,9 +24,10 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 velocity;
     private bool isGrounded;
+    private bool movementLocked;
 
     public bool IsGrounded => isGrounded;
-    public bool IsMoving => inputHandler.MoveInput.sqrMagnitude > 0.01f;
+    public bool IsMoving => !movementLocked && inputHandler.MoveInput.sqrMagnitude > 0.01f;
 
     private void Awake()
     {
@@ -37,9 +38,6 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         cameraTransform = Camera.main.transform;
-        // 아래 두 줄 삭제 — CursorManager가 처리
-        // Cursor.lockState = CursorLockMode.Locked;
-        // Cursor.visible = false;
     }
 
     private void Update()
@@ -57,6 +55,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyMovement()
     {
+        if (movementLocked) return;
+
         Vector2 input = inputHandler.MoveInput;
         if (input.sqrMagnitude < 0.01f) return;
 
@@ -83,10 +83,22 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded && velocity.y < 0f)
         {
-            velocity.y = -2f; // 바닥에 살짝 눌러줌
+            velocity.y = -2f;
         }
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    // ── 전투 시스템용 이동 잠금 ──
+
+    public void LockMovement()
+    {
+        movementLocked = true;
+    }
+
+    public void UnlockMovement()
+    {
+        movementLocked = false;
     }
 }
