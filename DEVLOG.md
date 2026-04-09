@@ -5,13 +5,17 @@
 ---
 
 ## 현재 상태 요약
+- **Phase**: Phase 2 (전투 MVP) 진입 — 아키텍처 코드 생성 완료
 - **에피소드**: EP02 (전투 프로토타입 — 약공격/강공격/구르기)
 - **Unity**: 6000 LTS / URP
 - **Input**: New Input System (PlayerControls.inputactions)
+- **신규 스크립트**: 38개 (Core/Combat/Player/Enemy) — `Assets/_Project/Scripts/` 하위
 
 ---
 
 ## 완료된 스크립트 목록
+
+### 프로토타입 (Assets/Scripts/) — EP01~EP02
 
 | 스크립트 | 역할 | 상태 |
 |---------|------|------|
@@ -24,6 +28,62 @@
 | InteractionSystem.cs | 뷰포트 레이캐스트 + 포커스 관리 | ✅ 완료 |
 | SampleInteractable.cs | 하이라이트 테스트용 | ✅ 완료 |
 | PlayerCombat.cs | 약공격/강공격(홀드)/구르기 + 이동잠금 연동 | ✅ 완료 |
+
+### 아키텍처 코드 (Assets/_Project/Scripts/) — Day 4 신규 생성
+
+#### Core (6개)
+| 스크립트 | 역할 | 상태 |
+|---------|------|------|
+| EventBus.cs | 전역 이벤트 버스 (Subscribe/Publish) + 게임 이벤트 정의 | ✅ 완료 |
+| GameState.cs | 게임 상태 enum (Boot/MainMenu/Hub/Run/Paused/GameOver) | ✅ 완료 |
+| GameManager.cs | Singleton, 상태 전환, 런 관리, 일시정지 | ✅ 완료 |
+| SceneLoader.cs | 비동기 씬 전환 유틸리티 | ✅ 완료 |
+| SaveSystem.cs | JSON 영구 저장 (통화, 업그레이드 해금) | ✅ 완료 |
+| ObjectPool.cs | 범용 오브젝트 풀 + PoolManager Singleton | ✅ 완료 |
+
+#### Combat (9개)
+| 스크립트 | 역할 | 상태 |
+|---------|------|------|
+| AttackData.cs | 공격별 SO (데미지/히트스톱/셰이크/넉백/콤보/3레이어SFX) | ✅ 완료 |
+| DodgeData.cs | 구르기 SO (i-frame/거리/속도곡선/캔슬) | ✅ 완료 |
+| StaminaData.cs | 스태미나 SO (최대치/소모/회복/고갈페널티) | ✅ 완료 |
+| CombatTuningData.cs | 전역 전투 기본값 SO | ✅ 완료 |
+| IDamageable.cs | 데미지 인터페이스 (플레이어/적 공용) | ✅ 완료 |
+| WeaponHitbox.cs | 무기 Collider ON/OFF + 중복히트 방지 | ✅ 완료 |
+| HitFeedback.cs | 히트스톱 + 이펙트 + impact/resonance 사운드 | ✅ 완료 |
+| CameraShake.cs | 카메라 위치 오프셋 셰이크 | ✅ 완료 |
+| CombatSoundPlayer.cs | Sound Layering 1층 (whoosh) | ✅ 완료 |
+
+#### Player (13개)
+| 스크립트 | 역할 | 상태 |
+|---------|------|------|
+| IPlayerState.cs | 플레이어 상태 인터페이스 | ✅ 완료 |
+| PlayerStateMachine.cs | 상태 전환 + 컴포넌트 허브 + 이동/회전 유틸 | ✅ 완료 |
+| PlayerHealth.cs | IDamageable, HP, 무적 체크, 넉백→Hit, 사망→Death | ✅ 완료 |
+| PlayerStamina.cs | 스태미나 소모/회복/딜레이/고갈 페널티 | ✅ 완료 |
+| PlayerAnimator.cs | MoveX/MoveZ/Speed/isGrounded 동기화 | ✅ 완료 |
+| PlayerIdleState.cs | 대기 → Move/Attack/Dodge/Fall 전환 | ✅ 완료 |
+| PlayerMoveState.cs | 걷기/달리기/스프린트 통합 | ✅ 완료 |
+| PlayerDodgeState.cs | i-frame + 속도곡선 + 캔슬윈도우 | ✅ 완료 |
+| PlayerLightAttackState.cs | 3타 콤보 + 히트박스 타이밍 + 선입력 | ✅ 완료 |
+| PlayerHeavyAttackState.cs | 강공격 + 스태미나 소모 | ✅ 완료 |
+| PlayerHitState.cs | 경직 + 넉백 감쇠 | ✅ 완료 |
+| PlayerDeathState.cs | 사망 + PlayerDiedEvent | ✅ 완료 |
+| PlayerFallState.cs | 낙하 + 공중 방향 제어 | ✅ 완료 |
+
+#### Enemy (10개)
+| 스크립트 | 역할 | 상태 |
+|---------|------|------|
+| EnemyData.cs | 적 SO (스탯/감지/공격패턴/드롭) | ✅ 완료 |
+| IEnemyState.cs | 적 상태 인터페이스 | ✅ 완료 |
+| EnemyStateMachine.cs | NavMeshAgent + FSM + OverlapSphere 감지 | ✅ 완료 |
+| EnemyHealth.cs | IDamageable, 피격→Stagger, 사망→Death | ✅ 완료 |
+| EnemyIdleState.cs | 대기, 감지→Chase, 웨이포인트→Patrol | ✅ 완료 |
+| EnemyPatrolState.cs | 웨이포인트 순회 | ✅ 완료 |
+| EnemyChaseState.cs | NavMesh 추격, 범위 진입→Attack | ✅ 완료 |
+| EnemyAttackState.cs | AttackData SO 재사용, 히트박스 타이밍 | ✅ 완료 |
+| EnemyStaggerState.cs | 경직 + 넉백(NavMesh) | ✅ 완료 |
+| EnemyDeathState.cs | 사망 + 드롭 + EnemyDiedEvent | ✅ 완료 |
 
 ---
 
@@ -82,6 +142,30 @@
 - 칼 오브젝트 + Collider (타격 판정)
 - 적 캡슐 + 데미지 시스템
 - 히트스탑 + 카메라 쉐이크
+
+---
+
+## Day 4 (4/9) — 아키텍처 코드 일괄 생성
+
+### 완료
+- `Assets/_Project/Scripts/` 폴더 구조 생성 (Core/Combat/Player/Enemy + 기타)
+- **Core 6개**: EventBus, GameState, GameManager, SceneLoader, SaveSystem, ObjectPool(+PoolManager)
+- **Combat SO 4개**: AttackData, DodgeData, StaminaData, CombatTuningData (CreateAssetMenu: 색랑하산/Combat/)
+- **Combat 시스템 5개**: IDamageable, WeaponHitbox, HitFeedback(+Runner), CameraShake, CombatSoundPlayer
+- **Player SM 10개**: IPlayerState, PlayerStateMachine + 8개 States (Idle/Move/Dodge/LightAttack/HeavyAttack/Hit/Death/Fall)
+- **Player 3개**: PlayerHealth(IDamageable), PlayerStamina(SO기반), PlayerAnimator(해시 최적화)
+- **Enemy 10개**: EnemyData SO, IEnemyState, EnemyStateMachine(NavMesh+Gizmos), EnemyHealth + 6개 States (Idle/Patrol/Chase/Attack/Stagger/Death)
+
+### 핵심 설계
+- 플레이어/적 모두 **AttackData SO 공유** → 코드 한 벌로 양쪽 전투 처리
+- 구르기 i-frame은 **DodgeData SO**에서 0.01초 단위 튜닝
+- **Sound Layering 3레이어**: whoosh(CombatSoundPlayer) → impact+resonance(HitFeedback)
+- **EventBus** 기반 시스템 간 디커플링 (PlayerDied, EnemyDied, StaminaChanged 등)
+
+### 다음
+- 기존 프로토타입 코드(Assets/Scripts/) → 새 구조로 마이그레이션
+- UI 시스템 (HUD, HP바, 스태미나바)
+- Level 시스템 (Arena, Spawner)
 
 ---
 

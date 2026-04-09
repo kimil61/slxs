@@ -8,10 +8,19 @@
 
 # 추적할 파일들만 허용 ─────────────────────
 
-# 스크립트
+# 스크립트 (기존 프로토타입)
+!Assets/Scripts/
 !Assets/Scripts/**
 !Assets/Scripts/**/*.cs
 !Assets/Scripts/**/*.cs.meta
+
+# 스크립트 (신규 아키텍처)
+!Assets/_Project/
+!Assets/_Project/**
+!Assets/_Project/Scripts/
+!Assets/_Project/Scripts/**
+!Assets/_Project/Scripts/**/*.cs
+!Assets/_Project/Scripts/**/*.cs.meta
 
 # Input Actions
 !Assets/*.inputactions
@@ -26,6 +35,13 @@
 !README.md
 !.gitignore
 
+# 문서
+!a.md
+
 # 폴더 구조 유지용
 !Assets/
 !Assets/Scripts/
+!Assets/_Project/
+!Assets/_Project/Scripts/
+!Assets/_Project/Scripts/*/
+!Assets/_Project/Scripts/*/States/
