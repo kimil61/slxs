@@ -92,8 +92,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void CheckGround()
     {
-        Vector3 spherePos = transform.position + Vector3.down * (Controller.height * 0.5f - 0.25f);
-        IsGrounded = Physics.CheckSphere(spherePos, 0.3f, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+        IsGrounded = Controller.isGrounded;
     }
 
     private void ApplyGravity()

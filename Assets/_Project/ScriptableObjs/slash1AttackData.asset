@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be4f40b1a4917d346abd542daae7e240, type: 3}
+  m_Name: slash1AttackData
+  m_EditorClassIdentifier: Assembly-CSharp::AttackData
+  attackName: 
+  animationClip: {fileID: 7400000, guid: 995f6573e37df83468a2a6dfb105553d, type: 2}
+  damageMultiplier: 1
+  staminaCost: 0
+  hitStopDuration: 0.03
+  hitStopTimeScale: 0
+  cameraShakeIntensity: 0.2
+  cameraShakeDuration: 0.1
+  knockbackForce: 3
+  canComboInto:
+  - {fileID: 0}
+  comboWindowStart: 0.2
+  comboWindowEnd: 0.8
+  hitboxActivateTime: 0.2
+  hitboxDeactivateTime: 0.5
+  sfxWhoosh: {fileID: 0}
+  sfxImpact: {fileID: 0}
+  sfxResonance: {fileID: 0}
+  sfxWhooshVolume: 0.6
+  sfxImpactVolume: 1
+  sfxResonanceVolume: 0.4
+  sfxImpactDelay: 0
+  sfxResonanceDelay: 0.05

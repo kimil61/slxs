@@ -11,7 +11,6 @@ public class PlayerMoveState : IPlayerState
     {
         bool cursorLocked = player.CursorManager == null || player.CursorManager.IsCursorLocked;
 
-        // 낙하
         if (!player.IsGrounded)
         {
             player.TransitionTo(player.FallState);
@@ -20,22 +19,26 @@ public class PlayerMoveState : IPlayerState
 
         if (cursorLocked)
         {
-            // 구르기
-            if (player.Input.JumpPressed && player.Stamina != null && player.Stamina.CanConsume(player.dodgeData.staminaCost))
+            if (player.Input.DodgePressed && player.Stamina != null && player.Stamina.CanConsume(player.dodgeData.staminaCost))
             {
                 player.TransitionTo(player.DodgeState);
                 return;
             }
 
-            // 공격
-            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            if (player.Input.HeavyAttackPressed && player.Stamina != null && player.heavyAttackData != null
+                && player.Stamina.CanConsume(player.heavyAttackData.staminaCost))
+            {
+                player.TransitionTo(player.HeavyAttackState);
+                return;
+            }
+
+            if (player.Input.AttackPressed)
             {
                 player.TransitionTo(player.LightAttackState);
                 return;
             }
         }
 
-        // 이동 입력 없으면 Idle
         Vector3 moveDir = player.GetCameraRelativeMoveDir();
         if (moveDir.sqrMagnitude < 0.01f)
         {
@@ -43,7 +46,6 @@ public class PlayerMoveState : IPlayerState
             return;
         }
 
-        // 스프린트 체크 (Shift 홀드 + 스태미나 있음)
         bool isSprinting = Keyboard.current != null
             && Keyboard.current.leftShiftKey.isPressed
             && player.Stamina != null
@@ -63,8 +65,6 @@ public class PlayerMoveState : IPlayerState
 
         player.Move(moveDir, speed);
         player.RotateTowards(moveDir);
-
-        // Animator
         player.Animator.SetFloat("Speed", isSprinting ? 2f : 1f);
     }
 

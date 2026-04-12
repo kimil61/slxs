@@ -22,6 +22,13 @@
 !Assets/_Project/Scripts/**/*.cs
 !Assets/_Project/Scripts/**/*.cs.meta
 
+# ScriptableObjects / Unity assets used for tuning
+!Assets/_Project/ScriptableObjs/
+!Assets/_Project/ScriptableObjs/**
+!Assets/_Project/ScriptableObjs/**/*.asset
+!Assets/_Project/ScriptableObjs/**/*.asset.meta
+!Assets/_Project/ScriptableObjs.meta
+
 # Input Actions
 !Assets/*.inputactions
 !Assets/*.inputactions.meta
@@ -34,6 +41,7 @@
 !DEVLOG.md
 !README.md
 !.gitignore
+!AGENTS.md
 
 # 문서
 !a.md
