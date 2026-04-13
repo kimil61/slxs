@@ -8,7 +8,7 @@
 
 ## Current State
 - The project is in late `Phase 1` / early `Phase 2` relative to `DESIGN.md`.
-- The active test scene is `Assets/Scenes/SampleScene.unity`.
+- The active test scene is `Assets/Scenes/SampleScene.unity` based on the latest documented Unity Editor session.
 - The active code baseline is `Assets/_Project/Scripts/`.
 - The active gameplay tuning assets are in `Assets/_Project/ScriptableObjs/`.
 - Current playable features in-scene:
@@ -43,6 +43,8 @@
 - Player control is now driven by `PlayerStateMachine`, not by the old prototype scripts.
 - Gameplay feel is intentionally data-driven through `AttackData`, `DodgeData`, `StaminaData`, and `CombatTuningData`.
 - `SampleScene.unity` is still a working testbed, not a final production scene layout.
+- The repository currently tracks scripts, tuning assets, docs, and selected settings more reliably than scene/prefab/animation assets.
+- If a scene path or playable state is mentioned in docs, treat it as the latest documented Unity Editor baseline unless the asset is also present in git.
 
 ## Working Rules
 - Prefer extending and fixing `Assets/_Project/Scripts/` instead of creating parallel duplicate systems.
@@ -81,6 +83,7 @@
 - Commit Unity `.asset` files together with their `.meta` files.
 - Commit ScriptableObject tuning assets when they are required for scene behavior.
 - Do not remove or regenerate Unity metadata casually.
+- Be explicit when a claim is based on local Unity Editor state rather than repo-tracked assets.
 
 ## Recommended Immediate Priorities
 1. Stabilize `Slash1 -> Slash2` combo behavior.

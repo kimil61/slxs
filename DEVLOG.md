@@ -8,10 +8,11 @@
 ## 현재 상태 요약
 - **기준 문서**: `DESIGN.md`
 - **현재 페이즈**: `Phase 1` 완료 직전 + `Phase 2` 초입
-- **현재 씬 기준**: `Assets/Scenes/SampleScene.unity`
+- **현재 씬 기준**: 최신 Unity Editor 작업 기준 `Assets/Scenes/SampleScene.unity`
 - **코드 기준선**: `Assets/_Project/Scripts/`
 - **튜닝 에셋 기준선**: `Assets/_Project/ScriptableObjs/`
 - **엔진/패키지**: Unity 6000 LTS / URP / New Input System / AI Navigation
+- **저장소 추적 상태 주의**: 현재 git에는 스크립트, ScriptableObject, 문서, 일부 설정 파일 위주로 올라가 있으며 `.unity`, `.anim`, `.controller`, `.fbx` 같은 에디터 자산은 저장소만으로 검증되지 않는다.
 
 ## 이번 세션에서 실제로 끝난 것
 - `Assets/_Project/Scripts` 아키텍처 기준으로 플레이어 시스템을 다시 연결했다.
@@ -29,6 +30,32 @@
 - 구르기 속도 곡선과 회복 구간은 추가 미세 조정이 필요하다.
 - 히트박스/적 피격/히트스톱/넉백/사운드 레이어링은 아직 실전 검증 전이다.
 - `SampleScene`는 여전히 임시 테스트 씬이다. 최종 `Boot / MainMenu / GamePlay / Hub` 씬 구조는 미구성이다.
+
+---
+
+## 이번 세션 추가 확인
+
+### 저장소 기준 확인 결과
+- 작업 트리는 깨끗했고 `main` 브랜치 기준으로 정리되어 있었다.
+- `Assets/_Project/Scripts/`와 `Assets/_Project/ScriptableObjs/`는 문서와 일치하게 존재했다.
+- 다만 현재 저장소에는 `.unity`, `.anim`, `.controller`, `.fbx` 자산이 잡히지 않았다.
+- 따라서 `SampleScene`, Animator 전이, 프리팹 wiring, 실제 배치 상태는 Unity Editor에서 다시 확인해야 한다.
+
+### 플레이어 전투 코드 리뷰 결과
+- `PlayerStateMachine` 중심의 입력/상태 전이 구조는 유지되고 있다.
+- `Slash1 -> Slash2` 불안정 원인은 코드상으로도 확인된다.
+  - 공격 상태가 실제 Animator state가 아니라 `AnimationClip.length`와 로컬 타이머를 기준으로 종료된다.
+  - 경공격은 매번 같은 `Attack` 트리거를 사용하고 있어, 콤보 단계가 Animator에 명시적으로 전달되지 않는다.
+  - `AttackData.canComboInto` 데이터 구조는 존재하지만 현재 경공격 로직은 `CurrentComboIndex`만 사용한다.
+  - 입력 버퍼가 따로 없어서 콤보 입력 타이밍이 조금만 빨라도 누락될 수 있다.
+- `WeaponHitbox`는 `other.GetComponent<IDamageable>()`만 사용하므로 적 루트가 아니라 자식 콜라이더를 맞출 때 프리팹 구조에 따라 적중 누락 가능성이 있다.
+
+### Unity Editor에서 확인할 것
+1. `SampleScene` 실제 경로와 저장 여부
+2. `PlayerAnimator.controller`의 `Attack` 전이 조건과 `Slash1 -> Slash2` 연결 방식
+3. `Slash1`, `Slash2`, `HeavyAttack`, `Dodge` 상태 속도와 transition duration
+4. 플레이어 무기 콜라이더와 `WeaponHitbox` owner / layer / trigger 설정
+5. 적 프리팹의 `IDamageable` 부착 위치와 자식 콜라이더 구조
 
 ---
 
