@@ -21,12 +21,15 @@ MonoBehaviour:
   cameraShakeIntensity: 0.2
   cameraShakeDuration: 0.1
   knockbackForce: 3
+  totalDuration: 0.75
+  moveRecoveryTime: 0.75
+  dodgeCancelTime: 0.38
   canComboInto:
   - {fileID: 0}
-  comboWindowStart: 0.2
-  comboWindowEnd: 0.8
-  hitboxActivateTime: 0.2
-  hitboxDeactivateTime: 0.5
+  comboWindowStartTime: 0.22
+  comboWindowEndTime: 0.48
+  hitboxStartTime: 0.18
+  hitboxEndTime: 0.34
   sfxWhoosh: {fileID: 0}
   sfxImpact: {fileID: 0}
   sfxResonance: {fileID: 0}

@@ -33,18 +33,26 @@ public class AttackData : ScriptableObject
     [Header("넉백")]
     public float knockbackForce = 3.0f;
 
+    [Header("Gameplay Timeline (seconds)")]
+    [Min(0.01f)]
+    public float totalDuration = 0.7f;
+    [Min(0f)]
+    public float moveRecoveryTime = 0.55f;
+    [Min(0f)]
+    public float dodgeCancelTime = 0.35f;
+
     [Header("콤보")]
     public AttackData[] canComboInto;
-    [Range(0f, 1f)]
-    public float comboWindowStart = 0.4f;
-    [Range(0f, 1f)]
-    public float comboWindowEnd = 0.8f;
+    [Min(0f)]
+    public float comboWindowStartTime = 0.2f;
+    [Min(0f)]
+    public float comboWindowEndTime = 0.45f;
 
-    [Header("히트박스 타이밍 (normalized)")]
-    [Range(0f, 1f)]
-    public float hitboxActivateTime = 0.2f;
-    [Range(0f, 1f)]
-    public float hitboxDeactivateTime = 0.5f;
+    [Header("히트박스 타이밍 (seconds)")]
+    [Min(0f)]
+    public float hitboxStartTime = 0.12f;
+    [Min(0f)]
+    public float hitboxEndTime = 0.28f;
 
     [Header("Sound Layering — 3레이어 SFX")]
     public AudioClip sfxWhoosh;
@@ -55,4 +63,15 @@ public class AttackData : ScriptableObject
     [Range(0f, 1f)] public float sfxResonanceVolume = 0.4f;
     [Range(0f, 0.2f)] public float sfxImpactDelay = 0f;
     [Range(0f, 0.2f)] public float sfxResonanceDelay = 0.05f;
+
+    private void OnValidate()
+    {
+        totalDuration = Mathf.Max(0.01f, totalDuration);
+        moveRecoveryTime = Mathf.Clamp(moveRecoveryTime, 0f, totalDuration);
+        dodgeCancelTime = Mathf.Clamp(dodgeCancelTime, 0f, totalDuration);
+        comboWindowStartTime = Mathf.Clamp(comboWindowStartTime, 0f, totalDuration);
+        comboWindowEndTime = Mathf.Clamp(comboWindowEndTime, comboWindowStartTime, totalDuration);
+        hitboxStartTime = Mathf.Clamp(hitboxStartTime, 0f, totalDuration);
+        hitboxEndTime = Mathf.Clamp(hitboxEndTime, hitboxStartTime, totalDuration);
+    }
 }

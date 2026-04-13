@@ -3,7 +3,6 @@ using UnityEngine;
 public class PlayerLightAttackState : IPlayerState
 {
     private float timer;
-    private float clipLength;
     private AttackData currentAttack;
     private bool hitboxActive;
     private bool comboQueued;
@@ -14,11 +13,24 @@ public class PlayerLightAttackState : IPlayerState
         hitboxActive = false;
         comboQueued = false;
 
+        if (player.lightAttacks == null || player.lightAttacks.Length == 0)
+        {
+            player.TransitionTo(player.IdleState);
+            return;
+        }
+
         int index = Mathf.Clamp(player.CurrentComboIndex, 0, player.lightAttacks.Length - 1);
         currentAttack = player.lightAttacks[index];
-        clipLength = currentAttack.animationClip != null ? currentAttack.animationClip.length : 0.6f;
+        if (currentAttack == null)
+        {
+            player.TransitionTo(player.IdleState);
+            return;
+        }
 
         player.Animator.SetTrigger("Attack");
+
+        if (player.Stamina != null)
+            player.Stamina.Consume(currentAttack.staminaCost);
 
         if (player.SoundPlayer != null)
             player.SoundPlayer.PlayWhoosh(currentAttack);
@@ -26,30 +38,33 @@ public class PlayerLightAttackState : IPlayerState
 
     public void Update(PlayerStateMachine player)
     {
-        timer += Time.deltaTime;
-        float normalized = timer / clipLength;
+        if (currentAttack == null)
+            return;
 
-        if (!hitboxActive && normalized >= currentAttack.hitboxActivateTime)
+        timer += Time.deltaTime;
+        float totalDuration = Mathf.Max(currentAttack.totalDuration, 0.01f);
+
+        if (!hitboxActive && timer >= currentAttack.hitboxStartTime)
         {
             hitboxActive = true;
             if (player.WeaponHitbox != null)
                 player.WeaponHitbox.Activate(currentAttack, player.baseDamage);
         }
 
-        if (hitboxActive && normalized >= currentAttack.hitboxDeactivateTime)
+        if (hitboxActive && timer >= currentAttack.hitboxEndTime)
         {
             hitboxActive = false;
             if (player.WeaponHitbox != null)
                 player.WeaponHitbox.Deactivate();
         }
 
-        if (normalized >= currentAttack.comboWindowStart && normalized <= currentAttack.comboWindowEnd)
+        if (timer >= currentAttack.comboWindowStartTime && timer <= currentAttack.comboWindowEndTime)
         {
             if (player.Input.AttackPressed)
                 comboQueued = true;
         }
 
-        if (normalized >= currentAttack.comboWindowStart)
+        if (timer >= currentAttack.dodgeCancelTime)
         {
             if (player.Input.DodgePressed && player.Stamina != null && player.Stamina.CanConsume(player.dodgeData.staminaCost))
             {
@@ -59,7 +74,15 @@ public class PlayerLightAttackState : IPlayerState
             }
         }
 
-        if (timer >= clipLength)
+        if (!comboQueued && timer >= currentAttack.moveRecoveryTime && player.Input.MoveInput.sqrMagnitude > 0.01f)
+        {
+            CleanUp(player);
+            player.CurrentComboIndex = 0;
+            player.TransitionTo(player.MoveState);
+            return;
+        }
+
+        if (timer >= totalDuration)
         {
             CleanUp(player);
 
@@ -71,7 +94,7 @@ public class PlayerLightAttackState : IPlayerState
             else
             {
                 player.CurrentComboIndex = 0;
-                player.TransitionTo(player.IdleState);
+                player.TransitionTo(player.Input.MoveInput.sqrMagnitude > 0.01f ? player.MoveState : player.IdleState);
             }
         }
     }

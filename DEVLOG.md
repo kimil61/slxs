@@ -267,3 +267,37 @@
 - `HeavyAttack`처럼 코드와 Animator 파라미터 이름을 반드시 정확히 맞춘다.
 - 회피 애니메이션 길이와 `DodgeData.totalDuration`은 반드시 분리해서 생각한다.
 - 게임 체감은 코드보다 `AttackData`, `DodgeData`, `CombatTuningData` 값이 훨씬 크게 좌우한다.
+
+---
+
+## 2026-04-13 추가 업데이트 — 공격 타이밍 구조 정리
+
+### 이번 후속 작업에서 끝난 것
+- `AttackData`가 이제 공격 타이밍의 실제 소스 오브 트루스가 되도록 정리했다.
+- 경공격/강공격/적 공격 상태가 더 이상 `AnimationClip.length`로 종료되지 않고 `AttackData`의 시간값을 직접 읽도록 변경했다.
+- `AttackData`에 다음 튜닝 필드를 추가했다.
+  - `totalDuration`
+  - `moveRecoveryTime`
+  - `dodgeCancelTime`
+  - `comboWindowStartTime`
+  - `comboWindowEndTime`
+  - `hitboxStartTime`
+  - `hitboxEndTime`
+- `slash1AttackData.asset`, `slash2AttackData.asset`, `heavyAttackData.asset`에 1차 기본값을 반영했다.
+- Unity Editor 플레이 테스트 기준으로, Animator state speed와 `AttackData.totalDuration`을 맞추면 공격 종료 타이밍과 이동 복귀 타이밍이 깔끔하게 맞는 것을 확인했다.
+
+### 이번 수정으로 달라진 점
+- 이제 `Slash1` 후 WASD 복귀 타이밍은 애니메이션 클립 길이가 아니라 `moveRecoveryTime`으로 조절한다.
+- 애니메이션 재생 속도를 바꿔도 전투 판정 종료 시점과 이동 복귀 시점을 별도로 관리할 수 있다.
+- `AttackData` 하나만 열어서 히트박스, 콤보, 회피 캔슬, 이동 복귀 타이밍을 같이 맞출 수 있다.
+
+### 남아 있는 한계
+- `Slash1 -> Slash2` 연계 자체는 이전보다 다루기 쉬워졌지만, Animator 전이와 입력 버퍼 안정화는 아직 추가 검증이 필요하다.
+- 현재 경공격은 여전히 `CurrentComboIndex` 기반으로만 단계가 넘어가며, `canComboInto`를 적극적으로 쓰는 구조는 아니다.
+- `DodgeData`는 이미 `totalDuration`, `recoveryTime`, `iFrameStart`, `iFrameDuration`, `distance`, `speedCurve`로 분리되어 있지만, 공격처럼 전부 초 단위로 통일된 구조는 아직 아니다.
+
+### 다음 Unity Editor 확인 포인트
+1. `Slash1`, `Slash2`, `HeavyAttack`의 Animator state speed와 `AttackData.totalDuration`이 실제 재생 시간과 맞는지 확인
+2. `moveRecoveryTime`을 기준으로 이동 복귀 체감이 자연스러운지 확인
+3. `comboWindowStartTime` / `comboWindowEndTime`이 `Slash1 -> Slash2` 체감 입력 구간과 맞는지 확인
+4. `DodgeData`도 공격과 같은 감각으로 더 세분화할지 판단

@@ -4,7 +4,6 @@ public class EnemyAttackState : IEnemyState
 {
     private AttackData currentAttack;
     private float timer;
-    private float clipLength;
     private bool hitboxActive;
 
     public void Enter(EnemyStateMachine enemy)
@@ -17,9 +16,6 @@ public class EnemyAttackState : IEnemyState
 
         // 랜덤 공격 패턴 선택 (플레이어와 같은 AttackData 구조)
         currentAttack = enemy.GetRandomAttack();
-        clipLength = currentAttack != null && currentAttack.animationClip != null
-            ? currentAttack.animationClip.length
-            : 1.0f;
 
         enemy.Animator.SetTrigger("Attack");
 
@@ -31,12 +27,11 @@ public class EnemyAttackState : IEnemyState
     public void Update(EnemyStateMachine enemy)
     {
         timer += Time.deltaTime;
-        float normalized = timer / clipLength;
 
         if (currentAttack != null)
         {
             // 히트박스 ON
-            if (!hitboxActive && normalized >= currentAttack.hitboxActivateTime)
+            if (!hitboxActive && timer >= currentAttack.hitboxStartTime)
             {
                 hitboxActive = true;
                 if (enemy.WeaponHitbox != null)
@@ -44,7 +39,7 @@ public class EnemyAttackState : IEnemyState
             }
 
             // 히트박스 OFF
-            if (hitboxActive && normalized >= currentAttack.hitboxDeactivateTime)
+            if (hitboxActive && timer >= currentAttack.hitboxEndTime)
             {
                 hitboxActive = false;
                 if (enemy.WeaponHitbox != null)
@@ -53,7 +48,7 @@ public class EnemyAttackState : IEnemyState
         }
 
         // 공격 종료
-        if (timer >= clipLength)
+        if (timer >= Mathf.Max(currentAttack != null ? currentAttack.totalDuration : 1f, 0.01f))
         {
             CleanUp(enemy);
             enemy.AttackCooldownTimer = enemy.data.attackCooldown;

@@ -15,65 +15,29 @@ MonoBehaviour:
   staminaCost: 25
   iFrameStart: 0.05
   iFrameDuration: 0.469
-  totalDuration: 0.6
+  totalDuration: 1.1835
   recoveryTime: 0.1
-  distance: 2
+  distance: 4
   speedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.0069847107
-      value: 0.9148483
-      inSlope: 0.39907983
-      outSlope: 0.39907983
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0
     - serializedVersion: 3
-      time: 0.122913465
-      value: 0.96111315
-      inSlope: 0.24391654
-      outSlope: 0.24391654
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.44087824
-      value: 0.98933357
-      inSlope: -0.03442131
-      outSlope: -0.03442131
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.6414769
-      value: 0.95772004
-      inSlope: -0.08818227
-      outSlope: -0.08818227
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.8043741
-      value: 0.9546627
-      inSlope: -0.1514969
-      outSlope: -0.1514969
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.95758057
-      value: 0.91111755
-      inSlope: -0.28422514
-      outSlope: -0.28422514
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
