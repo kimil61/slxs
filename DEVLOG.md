@@ -1,176 +1,241 @@
 ﻿# 色狼下山 — 개발 진행 로그
 
-> 매 Day 끝에 업데이트. 새 채팅 시작할 때 이 파일을 프로젝트에 올려두면 맥락 유지됨.
+> 이 문서는 `a.md`를 기준선으로 삼아, 실제로 Unity에서 확인된 구현 상태와 다음 작업 우선순위를 기록한다.
+> 설계 의도는 `a.md`, 현재 구현 현실은 `DEVLOG.md`를 본다.
 
 ---
 
 ## 현재 상태 요약
-- **Phase**: Phase 2 (전투 MVP) 진입 — 아키텍처 코드 생성 완료
-- **에피소드**: EP02 (전투 프로토타입 — 약공격/강공격/구르기)
-- **Unity**: 6000 LTS / URP
-- **Input**: New Input System (PlayerControls.inputactions)
-- **신규 스크립트**: 38개 (Core/Combat/Player/Enemy) — `Assets/_Project/Scripts/` 하위
+- **기준 문서**: `a.md`
+- **현재 페이즈**: `Phase 1` 완료 직전 + `Phase 2` 초입
+- **현재 씬 기준**: `Assets/Scenes/SampleScene.unity`
+- **코드 기준선**: `Assets/_Project/Scripts/`
+- **튜닝 에셋 기준선**: `Assets/_Project/ScriptableObjs/`
+- **엔진/패키지**: Unity 6000 LTS / URP / New Input System / AI Navigation
+
+## 이번 세션에서 실제로 끝난 것
+- `Assets/_Project/Scripts` 아키텍처 기준으로 플레이어 시스템을 다시 연결했다.
+- `PlayerStateMachine` 기반 이동, 회전, 카메라 추적을 실제 씬에서 동작시켰다.
+- `AttackData`, `DodgeData`, `StaminaData`, `CombatTuningData` ScriptableObject 에셋을 만들고 Inspector에 연결했다.
+- `PlayerAnimator.controller`를 직접 구성해서 `Idle`, `Locomotion`, `Slash1`, `HeavyAttack`, `Dodge`를 실제 재생되게 만들었다.
+- 약공격은 좌클릭, 강공격은 `Shift + 좌클릭`, 회피는 `Space`로 동작하도록 입력 계층을 정리했다.
+- 구르기 속도와 `DodgeData`를 엘든링 롤 감각에 맞춰 1차 튜닝했다.
+- 현재 체감 기준으로 `이동 / 회피 / 약공격 1타 / 강공격`은 플레이 가능한 상태다.
+- Git 커밋 및 원격 push 완료: `ce49436`
+
+## 아직 남아 있는 것
+- `Slash1 -> Slash2` 콤보 연계가 완전히 안정적이지 않다.
+- 구르기 속도 곡선과 회복 구간은 추가 미세 조정이 필요하다.
+- 히트박스/적 피격/히트스톱/넉백/사운드 레이어링은 아직 실전 검증 전이다.
+- `SampleScene`는 여전히 임시 테스트 씬이다. 최종 `Boot / MainMenu / GamePlay / Hub` 씬 구조는 미구성이다.
 
 ---
 
-## 완료된 스크립트 목록
+## 폴더 기준선
 
-### 프로토타입 (Assets/Scripts/) — EP01~EP02
+### 사용 중인 코드
+- `Assets/_Project/Scripts/Core`
+- `Assets/_Project/Scripts/Camera`
+- `Assets/_Project/Scripts/Combat`
+- `Assets/_Project/Scripts/Player`
+- `Assets/_Project/Scripts/Enemy`
+- `Assets/_Project/Scripts/Level`
+- `Assets/_Project/Scripts/UI`
+- `Assets/_Project/Scripts/Utils`
 
-| 스크립트 | 역할 | 상태 |
-|---------|------|------|
-| PlayerControls.cs | Input Actions 자동생성 (Gameplay 맵) | ✅ 완료 |
-| PlayerInputHandler.cs | 입력 수집 (Move/Look/Jump/Interact) | ✅ 완료 |
-| PlayerMovement.cs | WASD 이동 + 카메라 기준 회전 + 중력 + 전투 이동잠금 | ✅ 완료 (v2 - LockMovement 추가) |
-| ThirdPersonCamera.cs | 마우스 오빗 카메라 + 벽 충돌 줌인 | ✅ 완료 (v2 - Lerp 제거) |
-| CursorManager.cs | ESC 커서 잠금/해제 토글 | ✅ 완료 |
-| IInteractable.cs | 상호작용 인터페이스 | ✅ 완료 |
-| InteractionSystem.cs | 뷰포트 레이캐스트 + 포커스 관리 | ✅ 완료 |
-| SampleInteractable.cs | 하이라이트 테스트용 | ✅ 완료 |
-| PlayerCombat.cs | 약공격/강공격(홀드)/구르기 + 이동잠금 연동 | ✅ 완료 |
+### 사용 중인 튜닝 에셋
+- `Assets/_Project/ScriptableObjs/`
+  - `slash1AttackData.asset`
+  - `slash2AttackData.asset`
+  - `heavyAttackData.asset`
+  - `DodgeData.asset`
+  - `StaminaData.asset`
+  - `CombatTuningData.asset`
 
-### 아키텍처 코드 (Assets/_Project/Scripts/) — Day 4 신규 생성
-
-#### Core (6개)
-| 스크립트 | 역할 | 상태 |
-|---------|------|------|
-| EventBus.cs | 전역 이벤트 버스 (Subscribe/Publish) + 게임 이벤트 정의 | ✅ 완료 |
-| GameState.cs | 게임 상태 enum (Boot/MainMenu/Hub/Run/Paused/GameOver) | ✅ 완료 |
-| GameManager.cs | Singleton, 상태 전환, 런 관리, 일시정지 | ✅ 완료 |
-| SceneLoader.cs | 비동기 씬 전환 유틸리티 | ✅ 완료 |
-| SaveSystem.cs | JSON 영구 저장 (통화, 업그레이드 해금) | ✅ 완료 |
-| ObjectPool.cs | 범용 오브젝트 풀 + PoolManager Singleton | ✅ 완료 |
-
-#### Combat (9개)
-| 스크립트 | 역할 | 상태 |
-|---------|------|------|
-| AttackData.cs | 공격별 SO (데미지/히트스톱/셰이크/넉백/콤보/3레이어SFX) | ✅ 완료 |
-| DodgeData.cs | 구르기 SO (i-frame/거리/속도곡선/캔슬) | ✅ 완료 |
-| StaminaData.cs | 스태미나 SO (최대치/소모/회복/고갈페널티) | ✅ 완료 |
-| CombatTuningData.cs | 전역 전투 기본값 SO | ✅ 완료 |
-| IDamageable.cs | 데미지 인터페이스 (플레이어/적 공용) | ✅ 완료 |
-| WeaponHitbox.cs | 무기 Collider ON/OFF + 중복히트 방지 | ✅ 완료 |
-| HitFeedback.cs | 히트스톱 + 이펙트 + impact/resonance 사운드 | ✅ 완료 |
-| CameraShake.cs | 카메라 위치 오프셋 셰이크 | ✅ 완료 |
-| CombatSoundPlayer.cs | Sound Layering 1층 (whoosh) | ✅ 완료 |
-
-#### Player (13개)
-| 스크립트 | 역할 | 상태 |
-|---------|------|------|
-| IPlayerState.cs | 플레이어 상태 인터페이스 | ✅ 완료 |
-| PlayerStateMachine.cs | 상태 전환 + 컴포넌트 허브 + 이동/회전 유틸 | ✅ 완료 |
-| PlayerHealth.cs | IDamageable, HP, 무적 체크, 넉백→Hit, 사망→Death | ✅ 완료 |
-| PlayerStamina.cs | 스태미나 소모/회복/딜레이/고갈 페널티 | ✅ 완료 |
-| PlayerAnimator.cs | MoveX/MoveZ/Speed/isGrounded 동기화 | ✅ 완료 |
-| PlayerIdleState.cs | 대기 → Move/Attack/Dodge/Fall 전환 | ✅ 완료 |
-| PlayerMoveState.cs | 걷기/달리기/스프린트 통합 | ✅ 완료 |
-| PlayerDodgeState.cs | i-frame + 속도곡선 + 캔슬윈도우 | ✅ 완료 |
-| PlayerLightAttackState.cs | 3타 콤보 + 히트박스 타이밍 + 선입력 | ✅ 완료 |
-| PlayerHeavyAttackState.cs | 강공격 + 스태미나 소모 | ✅ 완료 |
-| PlayerHitState.cs | 경직 + 넉백 감쇠 | ✅ 완료 |
-| PlayerDeathState.cs | 사망 + PlayerDiedEvent | ✅ 완료 |
-| PlayerFallState.cs | 낙하 + 공중 방향 제어 | ✅ 완료 |
-
-#### Enemy (10개)
-| 스크립트 | 역할 | 상태 |
-|---------|------|------|
-| EnemyData.cs | 적 SO (스탯/감지/공격패턴/드롭) | ✅ 완료 |
-| IEnemyState.cs | 적 상태 인터페이스 | ✅ 완료 |
-| EnemyStateMachine.cs | NavMeshAgent + FSM + OverlapSphere 감지 | ✅ 완료 |
-| EnemyHealth.cs | IDamageable, 피격→Stagger, 사망→Death | ✅ 완료 |
-| EnemyIdleState.cs | 대기, 감지→Chase, 웨이포인트→Patrol | ✅ 완료 |
-| EnemyPatrolState.cs | 웨이포인트 순회 | ✅ 완료 |
-| EnemyChaseState.cs | NavMesh 추격, 범위 진입→Attack | ✅ 완료 |
-| EnemyAttackState.cs | AttackData SO 재사용, 히트박스 타이밍 | ✅ 완료 |
-| EnemyStaggerState.cs | 경직 + 넉백(NavMesh) | ✅ 완료 |
-| EnemyDeathState.cs | 사망 + 드롭 + EnemyDiedEvent | ✅ 완료 |
+### 주의
+- 앞으로도 새 코드는 `Assets/_Project/Scripts` 기준으로 유지한다.
+- `Assets/Scripts`를 다시 주력 코드 위치로 쓰지 않는다.
+- Unity 참조가 중요하므로 `.asset`와 `.meta`는 항상 같이 커밋한다.
 
 ---
 
-## Day 1 (3/29) — 프로젝트 세팅 + 이동 + 카메라
+## 시스템별 현황
 
-### 완료
-- URP 프로젝트 생성
-- New Input System 세팅 (Gameplay 맵: Move/Look/Jump/Interact)
-- WASD 이동 (CharacterController 기반, 카메라 방향 기준)
-- 3인칭 오빗 카메라 (직접 구현, Cinemachine 미사용)
-- 벽 충돌 시 카메라 자동 줌인
-- 카메라 이중보간 버그 수정 (Lerp+Slerp → 즉시배치+LookAt)
+### 1. Player Movement / Camera
+**상태**: 플레이 가능
 
-### 결정 사항
-- 카메라: 직접 구현 (Cinemachine 미사용) → 커스텀 자유도 확보
-- 입력: New Input System only
-- 물리: CharacterController (Rigidbody 아님)
-- sensitivity 기본값 2f (Inspector에서 조절 가능)
+완료:
+- WASD 이동
+- 카메라 기준 방향 이동
+- 이동 방향 회전
+- Idle / Running 애니메이션
+- Third Person Camera 추적
+
+비고:
+- `PlayerStateMachine` 기반으로 실제 동작 확인 완료
+- `CharacterController.isGrounded` 기준으로 접지 판정 수정
+
+남은 것:
+- `Locomotion`을 추후 `MoveX / MoveZ` 기반 2D Blend Tree로 확장
+- 점프는 현재 미구현
+- 낙하/착지 연출은 아직 다듬지 않음
+
+### 2. Dodge / Stamina
+**상태**: 동작함, 1차 튜닝 완료
+
+완료:
+- `Space` 입력으로 회피 동작
+- `DodgeData` 기반 `iFrameStart`, `iFrameDuration`, `totalDuration`, `recoveryTime`, `distance`, `speedCurve` 튜닝 가능
+- 엘든링 롤 기준으로 1차 속도 세팅
+
+현재 참고값:
+- `Roll.anim` 원본 길이: 약 `2.367초`
+- Animator `Dodge` 상태 속도는 엘든링 전체 롤 길이 기준으로 빠르게 조정
+- `DodgeData.totalDuration`과 `recoveryTime`을 별도로 관리
+
+남은 것:
+- 시작 가속 / 후반 감속을 더 자연스럽게 다듬기
+- 회피 거리와 무적 시간 밸런스 조정
+- 적 공격과 맞물렸을 때 체감 검증
+
+### 3. Light Attack / Heavy Attack
+**상태**: 1타 약공격 + 강공격 동작
+
+완료:
+- 좌클릭 약공격
+- `Shift + 좌클릭` 강공격
+- `AttackData` 기반 애니메이션/타이밍 연결
+- `Slash1`, `HeavyAttack` 상태 재생 확인
+
+남은 것:
+- `Slash1 -> Slash2` 콤보 안정화
+- 이후 `Slash3` 확장 여부 판단
+- 히트박스 실제 적중 테스트
+
+### 4. Hitbox / Damage / Feedback
+**상태**: 코드만 준비, 실제 검증 전
+
+코드상 준비된 것:
+- `WeaponHitbox`
+- `IDamageable`
+- `HitFeedback`
+- `CameraShake`
+- `CombatSoundPlayer`
+
+남은 것:
+- 무기 오브젝트 Collider와 `WeaponHitbox` 실제 연결 검증
+- 더미 적 또는 캡슐 적 배치
+- 히트스톱 / 넉백 / 셰이크 / 사운드 레이어링 체감 확인
+
+### 5. Enemy AI
+**상태**: 아키텍처 코드만 존재, 씬 실장 전
+
+준비된 코드:
+- `EnemyStateMachine`
+- `EnemyHealth`
+- `EnemyData`
+- `Idle / Patrol / Chase / Attack / Stagger / Death`
+
+남은 것:
+- 테스트용 적 프리팹
+- NavMesh Bake
+- 플레이어 감지 및 전투 연결
+- 적 공격용 `AttackData` 에셋 생성
+
+### 6. Level / Run Loop / UI
+**상태**: 대부분 뼈대만 있음
+
+준비된 코드:
+- `RunManager`
+- `ArenaManager`
+- `EnemySpawner`
+- `AreaData`
+- UI 관련 스크립트 다수
+
+남은 것:
+- 실제 씬에 배치 및 연결
+- 전투 구역 / 보상 / 결산 루프 연결
+- HUD / 보스 HP / 사망 화면 시각 구현
 
 ---
 
-## Day 2 (3/30) — 인터랙션 시스템 + 커서 관리 (진행중 미완료)
+## a.md 기준 체크
 
-### 미완료
-- CursorManager.cs (ESC 커서 잠금 토글)
-- IInteractable.cs (인터페이스)
-- InteractionSystem.cs (뷰포트 레이캐스트 + 포커스 관리)
-- SampleInteractable.cs (하이라이트 테스트)
-- PlayerMovement.cs에서 커서 잠금 로직 제거 (CursorManager로 이관)
+### Phase 0: 환경 세팅
+- [x] Unity 프로젝트 생성 (URP)
+- [x] Input System / URP / AI Navigation 포함 기본 패키지 상태 확인
+- [x] Git 저장소 및 원격 push
+- [x] 아키텍처 폴더 구조 생성
+- [ ] Boot / MainMenu / Gameplay 씬 플로우 분리
+- [ ] Daz 캐릭터 1개 임포트 정식 테스트
 
----
+### Phase 1: 3인칭 코어 무브먼트
+- [x] WASD 입력
+- [x] 카메라 기준 방향 이동
+- [x] 캐릭터 회전
+- [x] 걷기 / 달리기 애니메이션
+- [x] 구르기 동작
+- [x] 스태미나 연결
+- [x] DodgeData 기반 튜닝 구조
+- [ ] 점프 / 낙하 / 착지 정리
+- [ ] Locomotion 2D Blend Tree 정리
 
-## Day 3 (4/2) — EP02 전투 프로토타입 시작
+### Phase 2: 전투 MVP
+- [x] AttackData / DodgeData / StaminaData / CombatTuningData 생성
+- [x] 약공격 1타 동작
+- [x] 강공격 동작
+- [x] ScriptableObject 기반 튜닝 구조 확립
+- [ ] 경공격 2타 콤보 안정화
+- [ ] 히트박스 실제 적중 검증
+- [ ] 적 데미지 시스템 연결
+- [ ] 히트스톱 / 넉백 / 셰이크 체감 검증
+- [ ] 사운드 레이어링 연결 검증
 
-### 완료
-- Mixamo 캐릭터 + 애니메이션 임포트 (Idle/Run/Slash1/Slash2/HeavyAtk/Roll)
-- Animator Controller 세팅 (Speed, Attack, HeavyAttack, Roll 파라미터)
-- PlayerCombat.cs 신규 작성 (New Input System 기반)
-  - 좌클릭 탭 → 약공격 (Trigger: Attack)
-  - 좌클릭 홀드(0.4초+) → 강공격 (Trigger: HeavyAttack)
-  - 스페이스 → 구르기 (Trigger: Roll)
-  - 전투 중 이동잠금 (PlayerMovement.LockMovement 연동)
-  - 커서 풀려있으면 전투 입력 무시 (CursorManager 연동)
-- PlayerMovement.cs 수정 — LockMovement()/UnlockMovement() 추가
-- PlayerController.cs 삭제 (EP02 가이드 스크립트, 구버전 Input 사용 + PlayerMovement와 중복)
+### Phase 3: Enemy AI
+- [ ] 테스트 적 프리팹
+- [ ] NavMesh Bake
+- [ ] 플레이어 추적
+- [ ] 적 공격 연결
+- [ ] 적 사망 / 드롭
 
-### 이슈 해결
-- EP02 가이드 스크립트가 구버전 Input 클래스 사용 → New Input System으로 전환 (Mouse.current / Keyboard.current)
-- PlayerController.cs가 Rigidbody 기반이라 기존 CharacterController 아키텍처와 충돌 → 삭제, PlayerMovement에 통합
-
-### 알려진 이슈
-- 좌클릭이 Interact(EP01)와 Attack(EP02) 양쪽에 바인딩됨 → 전투 테스트 시 InteractionSystem 비활성화 필요. 추후 게임 상태 머신으로 분리 예정.
-
-### 다음
-- Animator 트랜지션 타이밍 미세 조정
-- 칼 오브젝트 + Collider (타격 판정)
-- 적 캡슐 + 데미지 시스템
-- 히트스탑 + 카메라 쉐이크
-
----
-
-## Day 4 (4/9) — 아키텍처 코드 일괄 생성
-
-### 완료
-- `Assets/_Project/Scripts/` 폴더 구조 생성 (Core/Combat/Player/Enemy + 기타)
-- **Core 6개**: EventBus, GameState, GameManager, SceneLoader, SaveSystem, ObjectPool(+PoolManager)
-- **Combat SO 4개**: AttackData, DodgeData, StaminaData, CombatTuningData (CreateAssetMenu: 색랑하산/Combat/)
-- **Combat 시스템 5개**: IDamageable, WeaponHitbox, HitFeedback(+Runner), CameraShake, CombatSoundPlayer
-- **Player SM 10개**: IPlayerState, PlayerStateMachine + 8개 States (Idle/Move/Dodge/LightAttack/HeavyAttack/Hit/Death/Fall)
-- **Player 3개**: PlayerHealth(IDamageable), PlayerStamina(SO기반), PlayerAnimator(해시 최적화)
-- **Enemy 10개**: EnemyData SO, IEnemyState, EnemyStateMachine(NavMesh+Gizmos), EnemyHealth + 6개 States (Idle/Patrol/Chase/Attack/Stagger/Death)
-
-### 핵심 설계
-- 플레이어/적 모두 **AttackData SO 공유** → 코드 한 벌로 양쪽 전투 처리
-- 구르기 i-frame은 **DodgeData SO**에서 0.01초 단위 튜닝
-- **Sound Layering 3레이어**: whoosh(CombatSoundPlayer) → impact+resonance(HitFeedback)
-- **EventBus** 기반 시스템 간 디커플링 (PlayerDied, EnemyDied, StaminaChanged 등)
-
-### 다음
-- 기존 프로토타입 코드(Assets/Scripts/) → 새 구조로 마이그레이션
-- UI 시스템 (HUD, HP바, 스태미나바)
-- Level 시스템 (Arena, Spawner)
+### Phase 4 이후
+- 아직 본격 착수 전
 
 ---
 
-## 기술 부채 / 나중에 할 것
-- [ ] 좌클릭 입력 충돌 해소 (Interact vs Attack → 게임 상태 머신)
-- [ ] Daz3D 캐릭터로 Capsule 교체 (EP06)
-- [ ] 애니메이션 이벤트로 Invoke 타이밍 교체 (현재 하드코딩된 duration)
-- [ ] 카메라 락온 모드 (전투 시스템 때)
+## 다음 우선순위
+
+### 바로 다음
+1. `Slash1 -> Slash2` 콤보 안정화
+2. 테스트용 적 1종 배치
+3. 무기 히트박스와 적 피격 확인
+4. 히트스톱 / 넉백 / 카메라 셰이크 / 사운드 체감 조정
+
+### 그 다음
+1. NavMesh Bake
+2. 적 FSM 실제 구동
+3. 사망 / 결산 / HUD 최소 연결
+4. `GamePlay` 씬 분리
+
+### 아직 건드리지 말 것
+- 록온 시스템
+- 여캐/NPC 시스템
+- Hub / Meta Progression 대규모 확장
+- 성인 연출용 별도 씬
+
+---
+
+## 현재 운영 원칙
+- 설계는 `a.md`, 현실 구현은 `DEVLOG.md`
+- 시스템은 코드보다 `ScriptableObject` 튜닝 우선
+- 플레이어 감각은 먼저 `회피 / 약공격 / 강공격 / 카메라`를 안정화
+- 적, UI, 로그라이트 루프는 그 다음
+- `SampleScene`은 계속 테스트 씬으로 써도 되지만, 일정 시점에 `GamePlay` 씬으로 분리 필요
+
+---
+
+## 메모
+- 현재 Animator 파라미터 이름 오타 하나로도 바로 동작이 깨진다.
+- `HeavyAttack`처럼 코드와 Animator 파라미터 이름을 반드시 정확히 맞춘다.
+- 회피 애니메이션 길이와 `DodgeData.totalDuration`은 반드시 분리해서 생각한다.
+- 게임 체감은 코드보다 `AttackData`, `DodgeData`, `CombatTuningData` 값이 훨씬 크게 좌우한다.

@@ -1,0 +1,3845 @@
+› 먼저 폴더하위 a.md DEVLOG.md README.md 이 세파일 한번 볼래??
+
+
+• 요청하신 세 파일 a.md, DEVLOG.md, README.md부터 확인하겠습니다. 우선 위치를 찾고 내용을 읽어서 핵심만 정리하겠습니다.
+
+• Ran Get-ChildItem -Path . -Recurse -File -Filter a.md | Select-Object -ExpandProperty FullName
+  └ D:\200_Creative\210_GameDev\211_Study_Exercises\_unity\SLXS_EP01\a.md
+
+• Ran Get-ChildItem -Path . -Recurse -File -Filter DEVLOG.md | Select-Object -ExpandProperty FullName
+  └ D:\200_Creative\210_GameDev\211_Study_Exercises\_unity\SLXS_EP01\DEVLOG.md
+
+• Ran Get-ChildItem -Path . -Recurse -File -Filter README.md | Select-Object -ExpandProperty FullName
+  └ D:\200_Creative\210_GameDev\211_Study_Exercises\_unity\SLXS_EP01\README.md
+    D:
+    … +43 lines (ctrl + t to view transcript)
+    \200_Creative\210_GameDev\211_Study_Exercises\_unity\SLXS_EP01\Library\PackageCache\com.unity.visualscripting@8bed5a
+    d90189\README.md
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 루트에 있는 세 파일을 기준으로 읽겠습니다. Library/PackageCache 아래 README.md들은 Unity 패키지 문서라서 제외하고 프로
+  젝트 루트 파일만 보겠습니다.
+
+• Ran Get-Content -Raw -Path .\DEVLOG.md
+  └ # ?꿰떬訝뗥굇 ??媛쒕컻 吏꾪뻾 濡쒓렇
+
+    … +172 lines (ctrl + t to view transcript)
+    - [ ] ?좊땲硫붿씠???대깽?몃줈 Invoke ??대컢 援먯껜 (?꾩옱 ?섎뱶肄붾뵫??duration)
+    - [ ] 移대찓???쎌삩 紐⑤뱶 (?꾪닾 ?쒖뒪????
+
+• Ran Get-Content -Raw -Path .\a.md
+  └ # ?꿰떬訝뗥굇 ??湲곗닠 ?꾪궎?띿쿂 & 濡쒕뱶留?v2
+
+    … +191 lines (ctrl + t to view transcript)
+    |2025-04|DodgeData SO 遺꾨━ (Gemini ?쇰뱶諛?    |i-frame 0.01珥??⑥쐞 ?쒕떇, ?쒖씠???듭떖 蹂??    |
+    |2025-04|Sound Layering 3?덉씠??(Gemini ?쇰뱶諛?|whoosh?뭝mpact?뭨esonance ?⑹꽦?쇰줈 ?寃⑷컧 媛뺥솕|
+
+• Ran Get-Content -Raw -Path .\README.md
+  └ # ?꿰떬訝뗥굇 (Saek-Nang-Ha-San)
+
+    … +25 lines (ctrl + t to view transcript)
+    - [ ] EP07: NPC 誘몄뀡
+    - [ ] EP09: ?덇쾬
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 세 파일 확인했습니다.
+
+  현재 터미널에서 a.md, DEVLOG.md, README.md가 전부 한글 인코딩이 깨져 보입니다. 내용 구조상 파일이 망가진 건 아니고,
+  UTF-8/CP949 계열 인코딩 불일치로 보입니다.
+
+  읽힌 기준으로 보면:
+
+  - a.md: 프로젝트 기술 설계서 수준 문서입니다. 게임 개요, 전체 아키텍처, 폴더 구조, GameManager / Combat / Player /
+  Enemy / Level / Progression / UI 설계, AttackData, DodgeData, StaminaData, CombatTuningData 같은 ScriptableObject 설
+  계, 단계별 개발 로드맵까지 들어 있습니다.
+  - DEVLOG.md: 개발 진행 로그입니다. Day 1~4 기준으로 입력, 카메라, 상호작용, 전투, 상태머신, 적 AI, 코어 시스템 구현 현
+  황이 정리돼 있습니다.
+  - README.md: 프로젝트 소개와 현재 에피소드 진행 체크리스트가 있는 루트 안내 문서입니다.
+
+  원하시면 다음 중 바로 이어서 하겠습니다.
+
+  1. 세 파일 인코딩 정상화해서 한글 제대로 읽히게 정리
+  2. 제가 내용만 깔끔하게 요약
+  3. 문서 기준으로 현재 코드 구조와 실제 프로젝트가 맞는지 대조 검토
+
+
+› utf-8로 되어있거든? 그럼 이거 anis euc_kr로 해줘? 아님 어떤 형식으로 수정할까?
+
+
+• 파일 자체는 UTF-8로 유지하는 쪽이 맞습니다. 지금 보인 깨짐은 문서 포맷 문제라기보다 제가 읽은 터미널/세션 쪽 디코딩 문
+  제일 가능성이 큽니다.
+
+  정리하면:
+
+  - UTF-8 유지 권장
+  - 가능하면 UTF-8 without BOM 권장
+  - ANSI로 바꾸는 건 비추천
+  - EUC-KR도 비추천
+  - Windows에서 말하는 ANSI는 보통 한국어 환경에선 CP949라서, EUC-KR과도 완전히 같지 않습니다
+
+  왜 UTF-8이 맞냐면:
+
+  - Git, Markdown, VS Code, GitHub, 협업 툴 호환성이 가장 좋음
+  - 나중에 다른 환경에서 다시 인코딩 문제 생길 가능성이 적음
+  - Unity 프로젝트 문서도 보통 UTF-8로 관리하는 게 안전함
+
+  예외적으로 ANSI/CP949를 고려할 상황:
+
+  - 아주 오래된 메모장/툴만 써야 하고
+  - GitHub/VS Code보다 로컬 Windows 전용 툴 호환이 더 중요할 때
+
+  실무적으로는 이렇게 가면 됩니다:
+
+  - a.md, DEVLOG.md, README.md는 UTF-8 유지
+  - 필요하면 제가 PowerShell에서 UTF-8로 제대로 읽히게 환경만 맞춰서 다시 확인
+  - 원하면 문서 저장 형식을 UTF-8 with BOM으로 통일하는 것도 가능
+      - 아주 일부 Windows 환경에선 BOM 있는 쪽이 덜 깨집니다
+      - 대신 일반적으로는 without BOM이 더 깔끔합니다
+
+  제 추천:
+
+  - 문서 인코딩은 UTF-8 그대로
+  - 변환하지 말고
+  - 제가 읽는 쪽을 UTF-8 기준으로 다시 맞춰서 확인
+
+  원하시면 다음 중 하나 바로 하겠습니다.
+
+  1. UTF-8 기준으로 다시 읽어서 정상 표시 확인
+  2. 세 파일을 UTF-8 with BOM으로 통일
+  3. 에디터/터미널에서 안 깨지게 설정 방법만 정리
+
+
+› 좋아 세파일을 UTF-8 with BOM으로 수정했다 .
+  다시 한번 확인 부탁한다.
+
+
+• 세 파일을 다시 읽어서 한글이 정상 표시되는지 확인하겠습니다. 루트 파일만 재확인하겠습니다.
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\DEVLOG.md
+  └ # 色狼下山 — 개발 진행 로그
+
+    … +172 lines (ctrl + t to view transcript)
+    - [ ] 애니메이션 이벤트로 Invoke 타이밍 교체 (현재 하드코딩된 duration)
+    - [ ] 카메라 락온 모드 (전투 시스템 때)
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\a.md
+  └ # 色狼下山 — 기술 아키텍처 & 로드맵 v2
+
+    … +197 lines (ctrl + t to view transcript)
+    |2025-04|DodgeData SO 분리 (Gemini 피드백)    |i-frame 0.01초 단위 튜닝, 난이도 핵심 변수     |
+    |2025-04|Sound Layering 3레이어 (Gemini 피드백)|whoosh→impact→resonance 합성으로 타격감 강화|
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\README.md
+  └ # 色狼下山 (Saek-Nang-Ha-San)
+
+    … +25 lines (ctrl + t to view transcript)
+    - [ ] EP07: NPC 미션
+    - [ ] EP09: 탈것
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 정상입니다. 지금은 세 파일 모두 한글이 제대로 읽힙니다.
+
+  확인 결과:
+
+  - a.md: 정상
+  - DEVLOG.md: 정상
+  - README.md: 정상
+
+  즉, 이번에 UTF-8 with BOM으로 바꾼 뒤 현재 제 읽기 환경에서는 인코딩 문제가 해결됐습니다.
+
+  추가로 보인 건 내용상 오타/정리 포인트 정도입니다.
+
+  - README.md의 Hightlight → Highlight
+  - 에피소드 번호가 EP07 두 번 있고 EP08이 비어 있음
+
+  원하시면 다음으로
+
+  1. 세 문서 내용 요약
+  2. 문서 오타/표기 통일 수정
+  3. 문서 기준으로 실제 프로젝트 구조 대조
+     중 하나 바로 하겠습니다.
+
+
+› 보통 CODEX 너는 AGENS.md라는 파일 생성하나?
+
+
+• 네. 보통은 AGENTS.md입니다. AGENS.md가 아니라 AGENTS.md가 표준처럼 쓰입니다.
+
+  이 환경에서도 에이전트 지침 파일로 주로 보는 이름은:
+
+  - AGENTS.md
+
+  용도는 대체로 이런 내용입니다:
+
+  - 프로젝트 구조
+  - 빌드/실행 방법
+  - 코딩 규칙
+  - 테스트 방법
+  - 작업 시 주의사항
+
+  다만 제가 항상 자동 생성하는 건 아닙니다. 보통은:
+
+  - 이미 있으면 읽고 따르고
+  - 없으면 꼭 필요한 경우에만 생성합니다
+
+  원하시면 제가 지금 이 프로젝트 루트에 AGENTS.md가 있는지 확인해드릴게요.
+
+
+› 좋아, 내가 우선 이 프로젝트 진행상황부터 우리 정리하고 그다음 AGENTS.md를 생성하자.
+  먼저 확인해보면은, 지금 현재 이 프로젝트는 색랑하산이라는 게임을 unity로 생성하기 위해서 만들어진거야.
+  그중에서 지금 확인해보면은 프로젝트의 주요 readme.md 같은 파일은 a.md DEVLOG.md README.md 이세파일이다. 이걸 먼저 읽
+  어봐.
+
+
+• 프로젝트 맥락을 다시 기준선으로 잡겠습니다. 루트의 a.md, DEVLOG.md, README.md를 다시 읽고, 현재 진행 상태를 작업 관점
+  에서 정리하겠습니다.
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\README.md
+  └ # 色狼下山 (Saek-Nang-Ha-San)
+
+    … +25 lines (ctrl + t to view transcript)
+    - [ ] EP07: NPC 미션
+    - [ ] EP09: 탈것
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\a.md
+  └ # 色狼下山 — 기술 아키텍처 & 로드맵 v2
+
+    … +197 lines (ctrl + t to view transcript)
+    |2025-04|DodgeData SO 분리 (Gemini 피드백)    |i-frame 0.01초 단위 튜닝, 난이도 핵심 변수     |
+    |2025-04|Sound Layering 3레이어 (Gemini 피드백)|whoosh→impact→resonance 합성으로 타격감 강화|
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\DEVLOG.md
+  └ # 色狼下山 — 개발 진행 로그
+
+    … +172 lines (ctrl + t to view transcript)
+    - [ ] 애니메이션 이벤트로 Invoke 타이밍 교체 (현재 하드코딩된 duration)
+    - [ ] 카메라 락온 모드 (전투 시스템 때)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 읽었습니다. 현재 이 세 파일 기준으로 프로젝트 상태를 정리하면 이렇습니다.
+
+  이 프로젝트는 Unity로 만드는 색랑하산의 초기 제작 저장소이고, 방향은 이미 꽤 명확합니다. a.md는 게임의 목표, 시스템 구
+  조, 폴더 구조, ScriptableObject 중심 설계, Phase별 로드맵까지 정의한 설계 문서입니다. 핵심은 3인칭 엘든링식 액션, 단일
+  검 무기, 로그라이트 런 구조, SO 기반 전투 튜닝, 코어/프레임워크/게임플레이 분리입니다.
+
+  DEVLOG.md를 보면 실제 구현은 설계보다 앞선 부분과 뒤처진 부분이 같이 있습니다. 현재 기준 진행 상태는 Phase 2 전투 MVP
+  진입이고, 이미 Assets/_Project/Scripts/ 아래에 Core, Combat, Player, Enemy 아키텍처 코드가 대량 생성되어 있습니다. 동
+  시에 예전 프로토타입 코드가 Assets/Scripts/ 쪽에 남아 있어서, 문서상 다음 핵심 과제는 새 구조로의 마이그레이션입니다.
+  알려진 이슈도 명확합니다. 가장 큰 건 좌클릭 입력 충돌(Interact vs Attack)과 아직 하드코딩된 애니메이션 타이밍, 그리고
+  프로토타입 코드와 새 구조의 공존입니다.
+
+  README.md는 가장 얇은 안내 문서이고, 현재 실제 진행 상황을 다 담기엔 부족합니다. 특히 DEVLOG.md 기준으로는 EP02 전투
+  프로토타입과 아키텍처 코드가 꽤 진행됐는데, README.md는 아직 에피소드 체크리스트 수준에 가깝습니다. 그래서 지금 프로젝
+  트 문서 체계는 역할이 이렇게 보입니다:
+
+  - a.md: 설계 원본
+  - DEVLOG.md: 실제 진행 현황
+  - README.md: 외부용/입문용 요약
+
+  다음 단계로는 제가 이 상태를 바탕으로
+
+  - 현재 프로젝트 진행상황을 한 문단으로 합의용 정리
+  - AGENTS.md에 들어갈 운영 규칙 초안 구성
+    순서로 이어가면 됩니다. 원하시면 먼저 제가 “현재 프로젝트 상태 합의본”을 짧게 작성하겠습니다.
+
+
+› 좋아, 그래서 a.md 라는 파일 기준으로 claude code에서 이미 기초 코드들을 생성을 했다. 그 파일들이 어디 있냐면@Aseet
+
+
+■ Conversation interrupted - tell the model what to do differently. Something went wrong? Hit `/feedback` to report the
+issue.
+
+
+› 좋아, 그래서 a.md 라는 파일 기준으로 claude code에서 이미 기초 코드들을 생성을 했다. 그 파일들이 어디 있냐면 프로젝트
+  의 Assets\_Project라는 폴더하위에 해당 cs소스코드들만 쭉 생성되었거든? 확인먼저 해봐
+
+
+• a.md 기준으로 생성된 기초 코드가 실제로 Assets/_Project 아래에 있는지 확인하겠습니다. 폴더 구조와 .cs 파일 목록부터 먼
+  저 보겠습니다.
+
+• Ran Get-ChildItem -Path .\Assets\_Project -Directory | Select-Object Name,FullName
+  └
+    Name    FullName
+    … +2 lines (ctrl + t to view transcript)
+
+
+
+• Ran Get-ChildItem -Path .\Assets\_Project -Recurse -File -Filter *.cs | Select-Object FullName
+  └
+    FullName
+    … +61 lines (ctrl + t to view transcript)
+
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 확인했습니다. a.md 기준으로 생성된 기초 코드들은 실제로 Assets/_Project/Scripts 아래에 들어 있습니다.
+
+  현재 보이는 구조는 대략 이렇습니다.
+
+  - Assets/_Project/Scripts/Core
+  - Assets/_Project/Scripts/Camera
+  - Assets/_Project/Scripts/Combat
+  - Assets/_Project/Scripts/Player
+  - Assets/_Project/Scripts/Enemy
+  - Assets/_Project/Scripts/Level
+  - Assets/_Project/Scripts/UI
+  - Assets/_Project/Scripts/Utils
+
+  실제로 생성된 주요 코드도 문서와 거의 맞습니다.
+
+  - Core: GameManager, GameState, EventBus, SaveSystem, SceneLoader, ObjectPool, CursorManager
+  - Combat: AttackData, DodgeData, StaminaData, CombatTuningData, WeaponHitbox, HitFeedback, CameraShake
+  - Player: PlayerStateMachine, PlayerHealth, PlayerStamina, PlayerAnimator, 상태별 State들
+  - Enemy: EnemyStateMachine, EnemyData, EnemyHealth, 상태별 State들
+  - Level: ArenaManager, EnemySpawner, RunManager, AreaData, SpawnPoint
+  - UI: HUDManager, PauseMenu, DeathScreen, BossHPBar, StaminaBar 등
+  - Utils: IInteractable, InteractionSystem, SampleInteractable
+
+  즉 지금 상태는 “설계 문서만 있는 단계”는 아니고, a.md를 바탕으로 Claude Code가 이미 꽤 넓은 범위의 뼈대 코드를 Assets/
+  _Project에 생성해 둔 상태입니다.
+
+  다만 한 가지는 같이 봐야 합니다.
+
+  - DEVLOG.md에는 일부 항목 수치가 예전 기준으로 적혀 있고
+  - 실제 폴더에는 Level, UI, Camera까지 더 들어가 있어서
+  - 문서와 실제 코드 사이에 약간의 시차가 있습니다
+
+  다음으로 원하시면 제가 바로
+
+  - Assets/Scripts의 기존 프로토타입 코드와
+  - Assets/_Project/Scripts의 새 아키텍처 코드
+    이 둘 관계를 비교해서 “현재 실제 주력 코드가 어디인지”까지 정리하겠습니다.
+
+
+› 좋아, a.md 기준으로 개발해야 돼 . 먼저 한번 너가 시간이 들더라도 전체적으로 프로젝트를 한번 확인해봐 .
+  내가 한건 a.md기준으로 claude code에서 소스를 추가한것밖에 없다. 이제 이것들을 실제로 유니티에서 애니메이션이랑 등등
+  을 작업을 해야 한다. 부분 내가 해야할것들이 많다. 그외 소스나 이런 디버깅은 우리가 같이 해야 하고 오케이? 너가 먼저
+  프로젝트 전반적으로 확인해보고, 그다음 AGENTS.md파일을 하나 너의 기준선에서 추가를 하자 내가 따로 .init이런거로 해야
+  하나?
+
+
+• 프로젝트 전반을 먼저 훑어서 현재 자산, 코드 구조, 문서와 실제 상태 차이를 정리하겠습니다. 그 다음 AGENTS.md는 이 프로
+  젝트 기준 운영 규칙으로 바로 추가하면 되고, 별도 .init 같은 절차가 필요한지도 함께 판단하겠습니다.
+
+• Ran if (Test-Path .\AGENTS.md) { Get-Content -Raw -Path .\AGENTS.md }
+  └ (no output)
+
+• Ran Get-ChildItem -Path . -Force | Select-Object Name,Mode
+  └
+    Name                                                        Mode
+    … +109 lines (ctrl + t to view transcript)
+
+
+
+• Ran rg --files -g "!Library/**" -g "!Temp/**" -g "!Logs/**" -g "!obj/**" -g "!Builds/**" -g "!Packages/PackageCache/
+  │ **"
+  └ .gitignore
+    a.md
+    … +156 lines (ctrl + t to view transcript)
+    Assets\_Project\Scripts\Player\States\PlayerMoveState.cs
+    Assets\_Project\Scripts\Player\States\PlayerMoveState.cs.meta
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 지금 보니 AGENTS.md는 아직 없고, Assets/_Project/Scripts에 아키텍처 코드는 넓게 생성돼 있습니다. 다음으로는 실제 Unity
+  작업 기반이 되는 Assets 쪽 자산, 씬, 기존 프로토타입 코드 유무를 더 확인해서 문서와 코드의 간극을 정리하겠습니다.
+
+• Ran Get-ChildItem -Path .\Assets -Directory | Select-Object Name,FullName
+  └
+    Name       FullName
+    … +7 lines (ctrl + t to view transcript)
+
+
+
+• Ran Get-ChildItem -Path .\Assets -Recurse -File -Include *.unity,*.prefab,*.controller,*.anim,*.fbx,*.asset |
+  │ Select-Object FullName
+  └
+    FullName
+    … +19 lines (ctrl + t to view transcript)
+
+
+
+• Ran Get-Content -Raw -Path .\Packages\manifest.json
+  └ {
+      "dependencies": {
+    … +46 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran if (Test-Path .\Assets\Scripts) { Get-ChildItem -Path .\Assets\Scripts -Recurse -File -Filter *.cs | Select-Object
+  │ FullName }
+  └ (no output)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 현재 Assets/Scripts는 비어 있고, 실질 C# 코드는 Assets/_Project/Scripts로 이미 옮겨진 상태로 보입니다. 자산은 아직 초
+  기 단계라서 SampleScene, 기본 애니메이션 클립들, T-Pose.fbx, PlayerAnimator.controller 정도만 확인됐습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerStateMachine.cs
+  └ using UnityEngine;
+
+    … +140 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Camera\ThirdPersonCamera.cs
+  └ using UnityEngine;
+
+    … +78 lines (ctrl + t to view transcript)
+        }
+    }
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Core\GameManager.cs
+  └ using UnityEngine;
+    using UnityEngine.SceneManagement;
+    … +96 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Level\RunManager.cs
+  └ using System.Collections;
+    using System.Collections.Generic;
+    … +122 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\Scenes\SampleScene.unity
+  └ %YAML 1.1
+    %TAG !u! tag:unity3d.com,2011:
+    … +351 lines (ctrl + t to view transcript)
+      - {fileID: 1072316250}
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 씬까지 확인해보니 아직 Unity 작업은 초반 상태입니다. SampleScene에는 예전 프로토타입 구성 요소가 남아 있고, 실제 새 아
+  키텍처 코드와는 아직 완전히 연결되지 않은 흔적이 보입니다.
+
+• Ran Get-Content -Raw -Path .\ProjectSettings\EditorBuildSettings.asset
+  └ %YAML 1.1
+    %TAG !u! tag:unity3d.com,2011:
+    … +10 lines (ctrl + t to view transcript)
+      m_UseUCBPForAssetBundles: 0
+
+
+• Ran rg -n "PlayerController|PlayerMovement|PlayerCombat|InteractionSystem|ThirdPersonCamera|CursorManager" .\Assets -g
+  │ "*.meta" -g "*.cs" -g "*.unity"
+  └ .\Assets\_Project\Scripts\Camera\ThirdPersonCamera.cs:8:public class ThirdPersonCamera : MonoBehaviour
+    .\Assets\_Project\Scripts\Core\CursorManager.cs:6:/// PlayerMovement.Start()에 있던 커서 잠금을 여기로 이관.
+    … +13 lines (ctrl + t to view transcript)
+    .\Assets\_Project\Scripts\Player\States\PlayerMoveState.cs:12:        bool cursorLocked = player.CursorManager ==
+    null || player.CursorManager.IsCursorLocked;
+
+• Ran dotnet build .\Assembly-CSharp.csproj
+  └   복원할 프로젝트를 확인하는 중...
+      D:\200_Creative\210_GameDev\211_Study_Exercises\_unity\SLXS_EP01\Unity.RenderPipelines.Core.Runtime.Shared.csproj
+    … +51 lines (ctrl + t to view transcript)
+
+    경과 시간: 00:00:45.63
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 코드도 한 번 컴파일 관점으로 확인해봤습니다. 현재 Assembly-CSharp는 바로 빌드되는 상태가 아니고, 우선 PlayerControls
+  관련 참조 오류 1건이 잡힙니다. 즉, 문서대로 뼈대는 생겼지만 “유니티에 붙여서 바로 플레이 가능한 상태”는 아직 아닙니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerControls.cs
+  └ using UnityEngine;
+
+    … +58 lines (ctrl + t to view transcript)
+        }
+    }
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerInputHandler.cs
+  └ using UnityEngine;
+
+    … +40 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\PlayerControls.inputactions
+  └ {
+        "version": 1,
+    … +146 lines (ctrl + t to view transcript)
+        "controlSchemes": []
+    }
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 정리는 끝났고, 이 프로젝트 기준 운영 규칙을 담은 AGENTS.md를 루트에 추가하겠습니다. 내용은 실제 현 상태를 반영해서
+  Assets/_Project/Scripts를 주력 코드 기준으로 잡고, Unity 작업과 코드 작업의 분담, 문서 우선순위, 현재 알려진 주의사항
+  까지 포함하겠습니다.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 프로젝트 전반 확인했고, 기준선도 잡아뒀습니다. AGENTS.md는 루트에 추가했습니다:
+  D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/AGENTS.md
+
+  현재 상태를 짧게 정리하면, 이 저장소는 a.md를 기반으로 Claude가 Assets/_Project/Scripts 아래에 아키텍처 뼈대 코드를 꽤
+  넓게 생성해둔 상태입니다. 하지만 Unity 에디터 쪽 실제 연결은 아직 초반입니다. 씬은 아직 Assets/Scenes/
+  SampleScene.unity 하나만 빌드 설정에 들어가 있고, 그 씬 안에는 예전 프로토타입 흔적이 남아 있습니다. 즉 지금은 “설계
+  문서 + 코드 뼈대는 있음, 실제 씬/애니메이션/프리팹 연결은 이제 시작” 단계로 보는 게 맞습니다.
+
+  중요한 확인 사항도 하나 잡혔습니다. 현재 C# 프로젝트는 바로 깨끗하게 빌드되지 않습니다. PlayerInputHandler.cs는 Input
+  System이 생성하는 PlayerControls 래퍼 클래스를 기대하는데, 지금 Assets/_Project/Scripts/Player/PlayerControls.cs에는
+  그게 아니라 PlayerController MonoBehaviour가 들어 있습니다. 이건 앞으로 우리가 가장 먼저 정리해야 할 실제 오류입니다.
+
+  질문하신 .init 같은 건 필요 없습니다. 이 프로젝트에서는 루트의 AGENTS.md만 있으면 충분합니다. 앞으로 새 세션에서도 이
+  파일이 로컬 작업 규칙 기준점 역할을 합니다.
+
+  다음 순서는 이게 맞습니다.
+
+  1. PlayerControls 입력 래퍼 문제부터 정리해서 컴파일 가능한 상태 만들기
+  2. SampleScene를 새 아키텍처 기준으로 점검하거나 새 씬 구조로 갈지 결정
+  3. 그 다음 Unity 에디터 작업과 코드 작업을 병행
+
+  원하시면 다음 턴에서 바로 PlayerControls 문제부터 잡겠습니다.
+
+
+› 좋아, 너의 의견대로 1부터 차근차근 진행하자 .
+
+
+• 먼저 컴파일을 막는 입력 계층부터 정리하겠습니다. 현재 핵심 문제는 PlayerInputHandler가 존재하지 않는 Input System 생성
+  래퍼 PlayerControls를 참조하고 있다는 점입니다.
+
+• Ran rg -n "PlayerController" .\Assets -g "*.cs" -g "*.unity"
+  └ .\Assets\_Project\Scripts\Player\PlayerControls.cs:3:public class PlayerController : MonoBehaviour
+
+• Ran rg -n "class PlayerControls|new PlayerControls\(|GamePlay\.Move|GamePlay\.Look|GamePlay\.Jump|
+  │ GamePlay\.Interact" .\Assets\_Project\Scripts
+  └ .\Assets\_Project\Scripts\Player\PlayerInputHandler.cs:15:        controls = new PlayerControls();
+    .\Assets\_Project\Scripts\Player\PlayerInputHandler.cs:22:        controls.GamePlay.Move.performed += ctx =>
+    … +9 lines (ctrl + t to view transcript)
+    .\Assets\_Project\Scripts\Player\PlayerInputHandler.cs:30:        controls.GamePlay.Interact.performed += ctx =>
+    InteractPressed = true;
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 입력 처리 파일만 먼저 최소 수정하겠습니다. 목표는 Unity 에디터 생성 래퍼에 의존하지 않고도 같은 Move/Look/Jump/
+  Interact 입력을 유지하면서 컴파일 가능한 상태로 만드는 것입니다.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 입력 래퍼 의존성은 제거했습니다. 이제 다시 빌드해서 다음 오류가 이어지는지 확인하겠습니다.
+
+• Ran dotnet build .\Assembly-CSharp.csproj
+  └   복원할 프로젝트를 확인하는 중...
+      복원할 모든 프로젝트가 최신 상태입니다.
+    … +63 lines (ctrl + t to view transcript)
+
+    경과 시간: 00:00:09.95
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 다음 오류는 상태 머신 쪽에서 Mouse.current를 직접 쓰는데 using UnityEngine.InputSystem;가 빠진 문제입니다. 그냥 네임스
+  페이스만 추가할지, 입력을 PlayerInputHandler로 일원화할지 보고 결정하겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerIdleState.cs
+  └ using UnityEngine;
+
+    … +48 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerDodgeState.cs
+  └ using UnityEngine;
+
+    … +58 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerLightAttackState.cs
+  └ using UnityEngine;
+
+    … +96 lines (ctrl + t to view transcript)
+    }
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 여기는 구조 개선보다 우선 컴파일 복구가 목적이니 최소 수정으로 가겠습니다. 상태 파일 세 곳에 Input System 네임스페이스
+  만 추가해서 현재 의도한 입력 방식이 그대로 동작하도록 맞추겠습니다.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 이제 다시 빌드해서 1차 목표인 “컴파일 가능한 상태”에 도달했는지 확인하겠습니다.
+
+• Ran dotnet build .\Assembly-CSharp.csproj
+  └   복원할 프로젝트를 확인하는 중...
+      복원할 모든 프로젝트가 최신 상태입니다.
+    … +71 lines (ctrl + t to view transcript)
+
+    경과 시간: 00:00:07.58
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 1단계는 끝냈습니다. 지금은 Assembly-CSharp가 정상 빌드됩니다.
+
+  수정한 핵심은 입력 계층입니다.
+
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/PlayerInputHandler.cs
+      - 존재하지 않는 생성형 PlayerControls 래퍼 의존성을 제거
+      - InputActionMap 기반으로 Move, Look, Jump, Interact를 직접 구성
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerIdleState.cs
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerDodgeState.cs
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerLightAttackState.cs
+      - Mouse.current 사용을 위해 UnityEngine.InputSystem 네임스페이스 추가
+
+  현재 남은 건 오류가 아니라 경고 2개뿐입니다.
+
+  - DamagePopup.fadeSpeed 미사용
+  - ThirdPersonCamera.maxDistance 미사용
+
+  다음 2단계로는 SampleScene가 아직 구형 프로토타입 구성에 묶여 있으니, 새 아키텍처(Assets/_Project/Scripts) 기준으로 씬
+  컴포넌트 연결 상태를 정리하는 게 맞습니다. 원하시면 바로 그 단계로 들어가겠습니다.
+
+
+› 좋아 2단계 구성하는데 폴더가 _Project/Scripts말고 직접 Assets/Scripts 하위로 넣어도 되나? 이건 2단계 작업 끝나고 옮기
+  는 작업을 하는게 나을라나?
+
+
+• 지금은 옮기지 않는 게 맞습니다.
+
+  이유는 간단합니다.
+
+  - 현재 실제 기준선이 이미 Assets/_Project/Scripts에 잡혀 있음
+  - SampleScene와 여러 스크립트/메타 참조가 이 구조를 전제로 형성돼 있음
+  - 지금 Assets/Scripts로 옮기면 2단계에서 해야 할 “씬 정리”와 “경로 이동”이 동시에 겹쳐서 문제 원인 추적이 어려워짐
+
+  제 권장 순서는 이렇습니다.
+
+  1. 먼저 2단계에서 SampleScene와 새 아키텍처 연결 상태를 정리
+  2. 실제로 어떤 스크립트가 살아 있는지, 어떤 게 죽은 코드인지 확정
+  3. 그 다음에 필요하면 Assets/_Project/Scripts → Assets/Scripts로 리팩터링 이동
+
+  즉, 지금 당장은 구조를 흔들지 말고 안정화부터 하는 게 맞습니다.
+
+  추가 판단 기준도 있습니다.
+
+  - 개인 프로젝트고 _Project가 작업 구분용으로 편하면 그대로 유지해도 됨
+  - 정말 단순한 Unity 기본 구조를 원하면 나중에 Assets/Scripts로 옮겨도 됨
+  - 다만 옮길 거면 “씬/프리팹 참조 안정화 후” 한 번에 해야 함
+
+  내 의견은 명확합니다.
+
+  - 지금: Assets/_Project/Scripts 유지
+  - 2단계 끝난 뒤: 옮길지 결정
+  - 옮긴다면 그때 내가 참조 깨짐 최소화 기준으로 같이 정리
+
+  원하면 바로 2단계로 들어가서 SampleScene 기준으로
+
+  - 현재 붙어 있는 컴포넌트
+  - 새 구조와 안 맞는 부분
+  - 유니티 에디터에서 네가 직접 연결해야 하는 부분
+    이걸 체크리스트로 정리하겠습니다.
+
+
+› 좋아, 너의 의견대로 간다. go
+
+
+• 2단계로 넘어가서 SampleScene를 새 아키텍처 기준으로 점검하겠습니다. 먼저 씬에 실제로 붙어 있는 컴포넌트와, 새 코드 구
+  조에서 요구하는 컴포넌트를 대조해서 어디까지가 살아 있고 어디부터 수동 Unity 작업이 필요한지 분리하겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Core\CursorManager.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +37 lines (ctrl + t to view transcript)
+        }
+    }
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Utils\InteractionSystem.cs
+  └ using UnityEngine;
+
+    … +87 lines (ctrl + t to view transcript)
+        }
+    }
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerControls.cs
+  └ using UnityEngine;
+
+    … +58 lines (ctrl + t to view transcript)
+        }
+    }
+
+• Ran rg -n "m_EditorClassIdentifier: Assembly-CSharp::|m_Script: \{fileID: 11500000, guid:" .
+  │ \Assets\Scenes\SampleScene.unity
+  └ 141:  m_Script: {fileID: 11500000, guid: 2aef3587578914f4bbce3b04180bff06, type: 3}
+    143:  m_EditorClassIdentifier: Assembly-CSharp::InteractionSystem
+    … +13 lines (ctrl + t to view transcript)
+    984:  m_Script: {fileID: 11500000, guid: 8efe7ef1bd87b604ab4d96a03ce10934, type: 3}
+    986:  m_EditorClassIdentifier: Assembly-CSharp::SampleInteractable
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 씬에 남아 있는 플레이어 구성이 아직 구형 프로토타입 기준이라는 점이 분명해졌습니다. 지금부터는 새 아키텍처 기준으로 필
+  요한 플레이어/카메라/코어 구성과, 현재 SampleScene에 실제 붙어 있는 구성 사이의 차이를 정확히 짚겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerHealth.cs
+  └ using UnityEngine;
+
+    … +83 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerStamina.cs
+  └ using UnityEngine;
+
+    … +85 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran rg --files .\Assets -g "*.cs" | rg "PlayerMovement|PlayerCombat|PlayerController|ThirdPersonCamera|CursorManager|
+  │ GameManager|PlayerStateMachine|PlayerHealth|PlayerAnimator|PlayerStamina|WeaponHitbox|CombatSoundPlayer|
+  │ InteractionSystem|SampleInteractable"
+  └ .\Assets\_Project\Scripts\Utils\SampleInteractable.cs
+    .\Assets\_Project\Scripts\Utils\InteractionSystem.cs
+    … +7 lines (ctrl + t to view transcript)
+    .\Assets\_Project\Scripts\Player\PlayerStateMachine.cs
+    .\Assets\_Project\Scripts\Camera\ThirdPersonCamera.cs
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerAnimator.cs
+  └ using UnityEngine;
+
+    … +40 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Combat\WeaponHitbox.cs
+  └ using System.Collections.Generic;
+    using UnityEngine;
+    … +63 lines (ctrl + t to view transcript)
+    }
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 2단계 점검 결과, 지금 SampleScene는 새 아키텍처 기준으로 아직 정리되지 않았습니다.
+
+  핵심 상태는 이렇습니다.
+
+  - 코드 기준선은 Assets/_Project/Scripts
+  - 하지만 SampleScene 안 플레이어는 아직 구형 프로토타입 구성에 묶여 있음
+  - 즉, “코드는 새 구조”, “씬은 옛 구조” 상태입니다
+
+  현재 SampleScene에서 확인된 플레이어/카메라 쪽 구성:
+
+  - InteractionSystem
+  - PlayerInputHandler
+  - PlayerMovement
+  - PlayerController
+  - PlayerCombat
+  - ThirdPersonCamera
+  - SampleInteractable
+
+  반면 새 아키텍처가 실제로 기대하는 핵심 플레이어 구성은 이쪽입니다.
+
+  - PlayerStateMachine
+  - PlayerHealth
+  - PlayerStamina
+  - PlayerAnimator
+  - PlayerInputHandler
+  - WeaponHitbox
+  - CombatSoundPlayer
+  - CursorManager
+  - 필요 시 GameManager
+
+  즉 문제는 명확합니다.
+
+  - SampleScene은 아직 PlayerMovement, PlayerCombat, PlayerController 같은 구형 흐름 위에 있음
+  - 새 아키텍처는 PlayerStateMachine 중심인데 씬에 아직 안 붙어 있음
+  - CursorManager, GameManager도 씬에 실제 배치됐는지 기준이 불명확함
+  - 그래서 지금은 “코드가 있어도 씬이 그 코드를 쓰지 않는 상태”에 가깝습니다
+
+  추가로 확인된 사실:
+
+  - PlayerInputHandler는 이제 컴파일 가능하게 수정됨
+  - 전체 Assembly-CSharp 빌드는 성공
+  - 남은 건 컴파일 문제가 아니라 Unity 씬 연결 문제입니다
+
+  내 판단:
+
+  - 지금 폴더 이동은 하지 말고
+  - 먼저 SampleScene를 새 구조로 마이그레이션해야 합니다
+
+  다음 실제 작업 순서는 이게 맞습니다.
+
+  1. SampleScene의 Player에서 구형 컴포넌트 사용 여부 정리
+  2. PlayerStateMachine 기반으로 플레이어 오브젝트 재구성
+  3. CursorManager와 GameManager를 씬에 배치
+  4. Animator, WeaponHitbox, CombatSoundPlayer, StaminaData/AttackData/DodgeData 같은 참조를 인스펙터에서 연결
+  5. 그 다음 플레이 테스트
+
+  내가 추천하는 3단계 작업은:
+
+  - 먼저 내가 “SampleScene에서 무엇을 제거하고 무엇을 붙여야 하는지” 체크리스트를 아주 구체적으로 작성
+  - 그걸 보고 당신이 Unity Editor에서 연결
+  - 그 다음 내가 다시 코드 기준으로 디버깅 지원
+
+  원하면 바로 다음 턴에
+  SampleScene 마이그레이션 체크리스트
+  형태로 아주 실무적으로 써드리겠습니다.
+
+
+› 좋아, 너의 작업 순서대로 간다.
+
+
+• 바로 진행하면 됩니다. 다음은 SampleScene를 새 구조로 옮기기 위한 실무 체크리스트입니다.
+
+  Player 정리
+
+  - 현재 Player 오브젝트에서 구형 컴포넌트 존재 여부 확인:
+      - PlayerMovement
+      - PlayerController
+      - PlayerCombat
+  - 이 3개는 새 구조 기준에서는 주력 컴포넌트가 아니므로 제거 대상입니다
+  - 유지할 가능성이 있는 건:
+      - CharacterController
+      - Animator
+      - PlayerInputHandler
+      - InteractionSystem
+
+  Player에 새로 붙일 것
+
+  - PlayerStateMachine
+  - PlayerHealth
+  - PlayerStamina
+  - PlayerAnimator
+
+  Player 하위 오브젝트 확인
+
+  - 무기용 자식 오브젝트 하나 준비
+  - 그 자식에:
+      - Collider 하나 추가 (Is Trigger = true)
+      - WeaponHitbox 추가
+      - 필요하면 CombatSoundPlayer 추가
+  - WeaponHitbox.owner는 Player 본체로 연결
+  - WeaponHitbox.hitLayers는 적 레이어만 맞게 설정
+
+  StateMachine 인스펙터 연결
+
+  - PlayerStateMachine에서 아래 참조 확인:
+      - lightAttacks
+      - heavyAttackData
+      - dodgeData
+      - combatTuning
+  - 아직 에셋이 없으면 먼저 ScriptableObject 에셋 생성 필요
+  - 최소한 테스트용으로라도 1세트는 만들어야 상태 전환이 제대로 돈다
+
+  Stamina 연결
+
+  - PlayerStamina에 StaminaData 연결
+  - 없으면 StaminaData 에셋 생성 후 할당
+
+  Animator 확인
+
+  - 현재 PlayerAnimator.controller가 플레이어 Animator에 연결돼 있는지 확인
+  - 파라미터 이름이 코드와 맞아야 함:
+      - MoveX
+      - MoveZ
+      - Speed
+      - isGrounded
+      - Attack
+      - HeavyAttack
+      - Dodge
+      - Hit
+      - isDead
+
+  카메라
+
+  - Main Camera의 ThirdPersonCamera는 유지 가능
+  - target이 새 구조의 Player Transform으로 제대로 연결되어 있는지 확인
+
+  씬 전역 오브젝트
+
+  - 빈 오브젝트 만들어서 CursorManager 추가
+  - 빈 오브젝트 만들어서 GameManager 추가
+  - 이름은 각각 [CursorManager], [GameManager] 정도로 두면 관리가 편합니다
+
+  Interaction
+
+  - InteractionSystem은 유지 가능
+  - 단, interactableLayer가 실제 상호작용 오브젝트 레이어와 맞아야 함
+  - 현재 좌클릭이 Interact에도 바인딩되어 있으니 전투 테스트 중엔 충돌 가능성 있음
+  - 초기 테스트는:
+      - 상호작용을 잠시 꺼두거나
+      - 상호작용 오브젝트를 치우고
+      - 이동/회피/공격만 먼저 확인하는 게 낫습니다
+
+  지금 당장 유니티에서 확인할 최소 목표
+
+  1. 플레이어가 씬에서 에러 없이 시작되는지
+  2. 카메라가 플레이어를 따라가는지
+  3. WASD 이동 입력이 상태머신 기준으로 들어오는지
+  4. 스페이스 구르기가 되는지
+  5. 좌클릭 공격 상태 진입이 되는지
+
+  중요
+
+  - 이 단계에선 “완성”이 목표가 아니라
+  - “구형 컴포넌트 제거 후 새 구조가 씬에서 실제로 돈다”가 목표입니다
+
+  이제 당신이 Unity Editor에서 이 체크리스트대로 한번 붙여보세요.
+  그 다음 상태를 알려주면, 제가 바로 다음으로
+
+  - 어떤 에셋이 없어서 막히는지
+  - 어떤 컴포넌트에서 NullReference 날 가능성이 큰지
+  - 무엇부터 추가 수정해야 하는지
+    이어가겠습니다.
+
+
+› 1. 플레이어가 씬에서 에러 없이 시작됨.
+  2. 카메라가 플레이어를 따라간다.
+  3. WASD가 눌리면 플레이가 달리는 animation은 실행되지만, 실제 world에서의 위치는 변하지 않음. 카메라 방향대로 player
+  가 향하지 않음.
+  4. 스페이스 구르기가 안됨.
+  5. 좌클릭 공경 상태 진입이 안됨.
+
+
+• 지금 증상은 새 구조가 “입력은 읽지만 상태머신 기반 이동/전투가 실제로 작동하지 않는” 전형적인 연결 문제로 보입니다. 우
+  선 이동 상태와 공격/구르기 진입 조건 코드를 직접 확인해서 막히는 지점을 좁히겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerDodgeState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +59 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerMoveState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +72 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerHeavyAttackState.cs
+  └ using UnityEngine;
+
+    … +64 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerIdleState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +49 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerLightAttackState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +97 lines (ctrl + t to view transcript)
+    }
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 입력만 들어오고 실제 행동이 안 나오는 걸 보면 PlayerAnimator만 반응하고 PlayerStateMachine은 다른 상태에 묶여 있을 가
+  능성이 큽니다. 낙하 상태/접지 판정/컴포넌트 충돌 쪽을 더 확인하겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerFallState.cs
+  └ public class PlayerFallState : IPlayerState
+    {
+    … +27 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerStateMachine.cs
+  └ using UnityEngine;
+
+    … +140 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Combat\DodgeData.cs
+  └ using UnityEngine;
+
+    … +33 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Combat\AttackData.cs
+  └ using UnityEngine;
+
+    … +55 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Combat\StaminaData.cs
+  └ using UnityEngine;
+
+    … +22 lines (ctrl + t to view transcript)
+    }
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 지금 증상은 원인이 꽤 좁혀졌습니다.
+
+  핵심 해석:
+
+  - WASD에 반응해서 달리기 애니메이션이 나오는 건 PlayerAnimator가 Input.MoveInput만 읽고 있기 때문입니다.
+  - 반대로 실제 이동, 회전, 구르기, 공격은 전부 PlayerStateMachine 쪽 책임입니다.
+  - 즉 지금은 “입력/애니메이션은 연결됐는데, 상태머신 기반 실제 행동 계층이 씬에서 제대로 안 돌고 있다”는 뜻입니다.
+
+  우선 Unity Editor에서 아래 순서대로 확인해 주세요.
+
+  1. Player 오브젝트에 PlayerStateMachine이 실제로 붙어 있고 Enabled인지 확인
+  2. Player에서 구형 컴포넌트 제거
+
+  - PlayerMovement
+  - PlayerController
+  - PlayerCombat
+
+  3. Player에 Rigidbody가 남아 있으면 제거
+
+  - 새 구조는 CharacterController 기반입니다
+  - CharacterController와 Rigidbody를 같이 두면 문제 원인이 됩니다
+
+  4. Animator에서 Apply Root Motion 끄기
+
+  - 지금 단계에서는 루트모션보다 코드 이동을 먼저 살려야 합니다
+
+  5. Player에 아래 컴포넌트가 모두 있는지 확인
+
+  - PlayerInputHandler
+  - PlayerStateMachine
+  - PlayerHealth
+  - PlayerStamina
+  - PlayerAnimator
+  - CharacterController
+
+  6. PlayerStateMachine 인스펙터 값 확인
+
+  - dodgeData 할당
+  - heavyAttackData 할당
+  - lightAttacks 배열에 최소 1개 이상 할당
+  - combatTuning 할당
+
+  7. PlayerStamina에 StaminaData 할당
+  8. 무기 자식 오브젝트 확인
+
+  - Collider 존재, Is Trigger = true
+  - WeaponHitbox 존재
+  - 필요하면 CombatSoundPlayer 존재
+  - WeaponHitbox.owner가 Player로 연결되어 있는지 확인
+
+  9. Main Camera 확인
+
+  - 태그가 MainCamera
+  - ThirdPersonCamera.target이 현재 Player Transform인지 확인
+
+  이 중에서 가장 가능성이 큰 원인은 이 셋입니다.
+
+  - PlayerStateMachine 미부착 또는 비활성
+  - Rigidbody/구형 이동 스크립트가 아직 남아 있음
+  - dodgeData, lightAttacks, StaminaData 같은 필수 참조 미할당
+
+  특히 지금 증상상 가장 먼저 볼 건:
+
+  - Player에 Rigidbody 남아 있는지
+  - PlayerStateMachine 붙어 있는지
+  - PlayerMovement, PlayerController, PlayerCombat 제거했는지
+
+  이 세 개 먼저 확인해서 알려주세요.
+  확인 결과만 주시면 다음 진단을 바로 이어가겠습니다.
+
+
+› 오 지금 문제점. Animator인가 Player에 붙어있는 Component삭제했다. 그리고 에러가 나네 .
+  Stamina Data에 클릭해도 뭐도 없네, 똑같게 Player State Machine에서 Heavy Attack Data를 눌렀는데 None(Attack Data)이렇
+  게 나옴. 내가 Animation파일을 여기에 끌어놓고 싶어도 끌어지지 않음.
+
+  Player를 삭제하고 하나하나씩 순차적으로 하는게 나을까? 아님 이대로 진행?
+
+
+• 지금은 Player를 삭제하지 않는 게 맞습니다. 문제는 구조가 꼬인 게 아니라 필수 참조 에셋이 아직 없는 상태에 가깝습니다.
+
+  핵심만 정리하면:
+
+  - StaminaData, AttackData, DodgeData, CombatTuningData는 Animation 파일을 넣는 칸이 아닙니다
+  - 이 칸들은 ScriptableObject 에셋을 넣는 자리입니다
+  - 그래서 None (AttackData)에 .anim 파일이 안 들어가는 게 정상입니다
+
+  또 하나:
+
+  - Animator 컴포넌트를 지웠다면 다시 붙여야 합니다
+  - 보통은 Player 본체나 모델 자식 오브젝트에 Animator가 있어야 합니다
+  - 그리고 그 Animator에 PlayerAnimator.controller를 연결해야 합니다
+
+  제 권장:
+
+  - Player는 삭제하지 말고 그대로 복구
+  - 지금부터 “에셋 생성 → 참조 연결 → 동작 확인” 순서로 가는 게 맞습니다
+
+  당장 Unity에서 해야 할 순서:
+
+  1. Animator 복구
+
+  - 플레이어 모델 오브젝트에 Animator 다시 추가
+  - Controller에 Assets/PlayerAnimator.controller 연결
+
+  2. ScriptableObject 에셋 생성
+
+  - Project 창에서 우클릭
+  - Create 메뉴에서 아래 찾아서 생성
+      - AttackData
+      - DodgeData
+      - StaminaData
+      - CombatTuningData
+  - 메뉴 이름이 한글 깨져 보여도 끝에 AttackData, DodgeData 같은 이름으로 보일 가능성이 큽니다
+
+  3. 생성한 에셋 연결
+
+  - PlayerStateMachine
+      - lightAttacks에 AttackData 하나 이상
+      - heavyAttackData에 AttackData 하나
+      - dodgeData에 DodgeData
+      - combatTuning에 CombatTuningData
+  - PlayerStamina
+      - staminaData에 StaminaData
+
+  4. AttackData 내부에 애니메이션 넣기
+
+  - AttackData 에셋을 클릭
+  - 그 안의 animationClip 칸에 .anim 파일을 넣는 구조입니다
+  - 즉 .anim은 PlayerStateMachine에 직접 넣는 게 아니라 AttackData 안에 넣습니다
+
+  5. 최소 테스트용으로 이렇게 구성
+
+  - lightAttacks[0] = Slash1용 AttackData
+  - heavyAttackData = HeavyAtk용 AttackData
+  - dodgeData는 기본값 유지 가능
+  - staminaData도 기본값 유지 가능
+
+  삭제 후 재구성은 마지막 수단입니다. 지금은 그럴 단계가 아닙니다.
+
+  원하시면 다음 답변에서 제가 아주 구체적으로
+
+  - AttackData 1개 만드는 법
+  - DodgeData 1개 만드는 법
+  - 각 필드에 뭘 넣어야 하는지
+    를 체크리스트로 바로 적어드리겠습니다.
+
+
+› 좋아.
+  1. Animator 복구했다.
+  2. ScriptableObjs폴더 생성하고 각각의 Anim에 해당하는 Obj를 생성하고 Player의 Player State Machine에 넣었다.
+  (LightAttacks,Heavy Attack,Dodge ,combat등) 그리고 Player Stamina Data에도 넣었다.
+  3. 생성한걸 하나씩 다 연결완료.
+  4. Attach Data 내부에 애니메이션 넣었다.
+  그리고 플레이 하니, 캐릭터 잘 움직인다, 좀 늦지만 움직임. 그리고 런닝하는 애니메이션도 있음.
+  문제:
+   1. 좌클릭 공격 안됨.
+   2. space 구르기 안됨.
+   이건 playerAnimator에서 설정하나? 아님 이것도 코드로 어떻게 대체할 방법이 있나?
+
+
+• PlayerAnimator.cs 문제가 아닙니다.
+  지금 공격/구르기는 PlayerAnimator 스크립트가 아니라:
+
+  - 코드: PlayerIdleState, PlayerMoveState, PlayerDodgeState, PlayerLightAttackState
+  - 애니메이터 컨트롤러: 트리거/전이 설정
+
+  이 둘이 같이 맞아야 동작합니다.
+
+  지금 상태에서 가장 가능성 높은 원인:
+
+  1. Dodge 트리거 이름 불일치
+
+  - 현재 코드에서는 player.Animator.SetTrigger("Dodge")를 씁니다
+  - 그런데 기존 컨트롤러는 예전 로그 기준으로 Roll 파라미터를 썼을 가능성이 큽니다
+  - 그러면 스페이스 눌러도 절대 구르기 전이가 안 납니다
+
+  2. Attack 전이 미설정
+
+  - 코드에서는 좌클릭 시 Attack 트리거를 쏩니다
+  - Animator Controller 안에서 Attack 트리거로 Idle/Move -> Slash1 전이가 있어야 합니다
+  - 없으면 상태는 바뀌어도 애니메이션이 안 나옵니다
+
+  먼저 Unity에서 이것만 확인해 주세요.
+
+  1. PlayerAnimator.controller 열기
+  2. Parameters 탭 확인
+
+  - Attack 트리거 있는지
+  - Dodge 트리거 있는지
+  - HeavyAttack 트리거 있는지
+  - isGrounded bool 있는지
+  - Speed float 있는지
+
+  3. 상태 전이 확인
+
+  - Idle 또는 locomotion 상태 -> Slash1 로 가는 전이에 Attack 조건이 있는지
+  - Idle 또는 locomotion 상태 -> Roll 또는 dodge 상태로 가는 전이에 Dodge 조건이 있는지
+
+  특히 지금은 이게 중요합니다:
+
+  - Animator에 Roll만 있고 Dodge가 없으면
+      - 가장 빠른 해결: Animator 파라미터 이름을 Dodge로 바꾸기
+      - 또는 코드에서 "Dodge"를 "Roll"로 바꾸기
+
+  제 추천은:
+
+  - 코드 기준에 맞춰 Animator를 수정
+  - 즉 파라미터를 Dodge로 통일
+
+  정리하면:
+
+  - 이동은 PlayerAnimator.cs 덕분에 보이는 것
+  - 공격/구르기는 Animator Controller 전이 설정 문제일 가능성이 큼
+  - 특히 구르기는 거의 확실히 Roll vs Dodge 이름 불일치부터 확인해야 함
+
+  원하면 다음 답변에서 제가
+  Animator Controller에서 Attack/Dodge 전이 어떻게 설정해야 하는지
+  정확히 체크리스트로 써드리겠습니다.
+
+
+› 좋아, 상태 전이 확인 결과 이부분에서 연결이 잘 안된거 같다. 이걸 연결해야 한다. 이거 혹시 코드에서 playerAnimator 이
+  걸 코드로 다 바꾸는 방법 없나? 하나씩 보이는데서 설정하는것보다,,
+
+
+• 가능은 합니다. 다만 지금 단계에서는 비추천입니다.
+
+  이유는 명확합니다.
+
+  - 지금 문제는 “애니메이터 전이 몇 개 연결” 수준입니다
+  - 이걸 전부 코드 기반으로 바꾸면 오히려 작업량이 훨씬 커집니다
+  - 특히 콤보, 구르기, 피격, 낙하까지 가면 결국 상태 전이 로직을 다시 코드로 다 써야 합니다
+
+  선택지는 3개입니다.
+
+  1. 지금 방식 유지: Animator Controller에서 전이 연결
+
+  - 가장 빠름
+  - 지금 프로젝트 상태에 제일 적합
+  - 오늘 바로 공격/구르기 살릴 수 있음
+
+  2. 절충안: Animator Controller는 유지하고, 전이는 최소화
+
+  - 예: Idle/Move/Fall만 컨트롤러에 두고
+  - 공격/구르기는 코드에서 CrossFade 또는 Play로 직접 재생
+  - 중간 난이도
+  - 나중에 추천 가능
+
+  3. 완전 코드 기반
+
+  - Animator Controller 거의 버리고
+  - Animancer나 Playables 기반으로 전환
+  - 가장 유연하지만 지금은 과함
+  - 현재 프로젝트 단계에서 공수 대비 이득이 적음
+
+  내 의견:
+
+  - 지금은 1번으로 가야 합니다
+  - 공격/구르기만 먼저 Animator에서 연결해서 플레이 가능 상태를 만드는 게 우선입니다
+  - 나중에 전투 구조가 안정되면 2번 절충안으로 일부 코드화하는 건 검토할 수 있습니다
+
+  실무적으로는 이렇게 가면 됩니다.
+
+  - 지금: Animator Controller에서 Attack, Dodge, HeavyAttack 전이만 최소 연결
+  - 이후: 동작 확인
+  - 그 다음 필요하면 내가 코드에서 전이 의존도를 줄이는 방향으로 리팩터링
+
+  즉, “전부 코드로 대체”는 가능하지만 지금 할 일은 아닙니다.
+
+  원하면 바로 다음 답변에서
+  Idle/Move -> Attack, Idle/Move -> Dodge, Attack -> Idle, Dodge -> Idle
+  이 4개를 어떻게 연결하면 되는지 아주 짧고 정확하게 적어드리겠습니다.
+
+
+› 좋아, 지금 문제는 이렇게 해결하고, 추후에 다른 enemy 의 animator같은건 코드로 작업해보자 .
+  먼저 이걸 전체를 초기화했다는 전제에서 idle running slash1,2 heavyatk dodge 등을 생성하고 locomotion도 생성해야 하나?
+  파라미터도 생성하고, 연결하고 이걸 하나하나 차근차근 설명해줘 .
+
+
+• 좋습니다. 지금은 PlayerAnimator.controller를 기준으로 최소 전이만 정확히 연결하면 됩니다. Locomotion도 만드는 게 맞습
+  니다.
+
+  아래 순서대로 하면 됩니다.
+
+  1. 필요한 애니메이션 클립
+  지금 플레이어용으로 최소 이 클립들이 필요합니다.
+
+  - Idle
+  - Running
+  - Slash1
+  - Slash2
+  - HeavyAtk
+  - Roll
+
+  이 정도면 현재 코드와 맞춰서 기본 플레이 테스트가 가능합니다.
+
+  2. Animator 파라미터 생성
+  PlayerAnimator.controller의 Parameters 탭에서 아래를 만드세요.
+
+  - Speed : Float
+  - MoveX : Float
+  - MoveZ : Float
+  - isGrounded : Bool
+  - Attack : Trigger
+  - HeavyAttack : Trigger
+  - Dodge : Trigger
+  - Hit : Trigger
+  - isDead : Bool
+
+  중요:
+
+  - 이름은 코드와 완전히 똑같아야 합니다
+  - 특히 Dodge로 맞추세요. Roll로 만들면 안 됩니다
+
+  3. 기본 상태 구성
+  Base Layer에 최소 이렇게 둡니다.
+
+  - Idle
+  - Locomotion
+  - LightAttack_1
+  - LightAttack_2
+  - HeavyAttack
+  - Dodge
+  - Hit
+  - Death
+
+  초기 상태는 Idle
+
+  4. Locomotion 만들기
+  Locomotion 상태를 만들고 Blend Tree로 설정하세요.
+
+  Blend Tree 내부:
+
+  - 파라미터는 우선 Speed 하나만 써도 됩니다
+  - Idle을 0
+  - Running을 1
+
+  지금은 단순 테스트가 목적이라 MoveX, MoveZ까지 안 써도 됩니다.
+  나중에 2D Blend Tree로 확장하면 됩니다.
+
+  즉 지금 추천:
+
+  - Idle 상태 따로 두지 않아도 되지만
+  - 관리 편하게 Idle + Locomotion 분리하는 게 좋음
+
+  5. 이동 전이
+
+  - Idle -> Locomotion
+      - 조건: Speed > 0.1
+      - Has Exit Time 끄기
+      - 전이 시간 짧게 0.05~0.1
+  - Locomotion -> Idle
+      - 조건: Speed < 0.1
+      - Has Exit Time 끄기
+      - 전이 시간 짧게
+
+  6. 공격 전이
+
+  - Idle -> LightAttack_1
+      - 조건: Attack
+      - Has Exit Time 끄기
+  - Locomotion -> LightAttack_1
+      - 조건: Attack
+      - Has Exit Time 끄기
+  - LightAttack_1 -> LightAttack_2
+      - 조건: Attack
+      - Has Exit Time 켜기
+      - Exit Time은 대략 0.5~0.7
+
+  지금은 우선 단순하게:
+
+  - LightAttack_1 -> Idle
+      - Has Exit Time 켜기
+  - LightAttack_2 -> Idle
+      - Has Exit Time 켜기
+
+  먼저 Slash1만 살리고 싶으면 Slash2는 나중에 해도 됩니다.
+
+  7. 강공격 전이
+
+  - Idle -> HeavyAttack
+      - 조건: HeavyAttack
+      - Has Exit Time 끄기
+  - Locomotion -> HeavyAttack
+      - 조건: HeavyAttack
+      - Has Exit Time 끄기
+  - HeavyAttack -> Idle
+      - Has Exit Time 켜기
+
+  참고:
+
+  - 지금 코드상 강공격 입력이 실제 연결돼 있는지는 나중에 별도 확인 필요
+  - 일단 상태는 만들어 두면 됩니다
+
+  8. 구르기 전이
+
+  - Idle -> Dodge
+      - 조건: Dodge
+      - Has Exit Time 끄기
+  - Locomotion -> Dodge
+      - 조건: Dodge
+      - Has Exit Time 끄기
+  - Dodge -> Idle
+      - Has Exit Time 켜기
+
+  이 부분이 지금 가장 중요합니다.
+  코드가 SetTrigger("Dodge")를 쓰므로 반드시 전이 조건도 Dodge여야 합니다.
+
+  9. 피격/사망은 지금은 최소만
+  지금 당장 안 써도 되지만 상태는 만들어 둘 수 있습니다.
+
+  - Any State -> Hit
+      - 조건: Hit
+  - Any State -> Death
+      - 조건: isDead == true
+
+  10. 가장 먼저 테스트할 최소 구성
+  지금 한 번에 다 하지 말고 이 최소셋 먼저 하세요.
+
+  - Idle
+  - Locomotion
+  - LightAttack_1
+  - Dodge
+
+  전이:
+
+  - Idle <-> Locomotion
+  - Idle -> LightAttack_1
+  - Locomotion -> LightAttack_1
+  - LightAttack_1 -> Idle
+  - Idle -> Dodge
+  - Locomotion -> Dodge
+  - Dodge -> Idle
+
+  이것만 해도
+
+  - 이동
+  - 좌클릭 약공격
+  - 스페이스 구르기
+    가 확인됩니다.
+
+  11. 지금 주의할 점
+
+  - Slash1, HeavyAtk, Roll 클립 자체 이름은 상관없음
+  - 중요한 건 상태 이름보다 Trigger 파라미터 이름과 전이 조건입니다
+  - 애니메이션 state 이름은 Attack1, RollState 이렇게 달라도 됩니다
+  - 하지만 코드가 던지는 파라미터는 반드시:
+      - Attack
+      - HeavyAttack
+      - Dodge
+
+  원하면 다음 답변에서
+  제가 Animator Controller를 기준으로 “마우스로 어디 클릭해서 어떤 상태를 만들고 어떤 조건을 넣는지”
+  정말 순서대로 한 단계씩 적어드리겠습니다.
+
+
+› 너가 이야기한 1~9까지 연결을 다 했다.
+  Locomotion에서 Running같은 Animation을 연결안하나? blendTree부분만 애니메이션 연결 못했음.
+  실제 지금 시작하면 캐릭터 움직이고 애니메이션 안됨.
+
+
+• 맞습니다. 지금 증상은 거의 확실히 Locomotion의 Blend Tree에 Running 클립이 실제로 안 들어가 있어서 그렇습니다.
+
+  즉:
+
+  - 상태 전이는 연결됨
+  - 하지만 Locomotion 상태 안에서 재생할 애니메이션이 비어 있거나 잘못 연결됨
+  - 그래서 캐릭터는 움직이는데 애니메이션이 안 보이는 겁니다
+
+  아래대로 하면 됩니다.
+
+  1. Locomotion 상태 열기
+
+  - Animator 창에서 Locomotion 상태 클릭
+  - Inspector에서 Motion이 Blend Tree로 되어 있는지 확인
+  - Blend Tree를 더블클릭해서 안으로 들어갑니다
+
+  2. Blend Tree 설정
+  Blend Tree 안에서:
+
+  - Blend Type: 1D
+  - Parameter: Speed
+
+  3. 모션 2개 넣기
+  Blend Tree 안에 모션을 2개 넣으세요.
+
+  - 첫 번째:
+      - Motion = Idle.anim
+      - Threshold = 0
+  - 두 번째:
+      - Motion = Running.anim
+      - Threshold = 1
+
+  이렇게 해야 Speed 값에 따라
+
+  - 0이면 Idle
+  - 1이면 Running
+    으로 넘어갑니다
+
+  4. 지금 구조에서는 Idle 단독 상태를 빼도 됨
+  사실 현재 코드 기준으로는 Locomotion 하나만으로도 테스트 가능합니다.
+  왜냐면 PlayerAnimator.cs가 Speed를 계속 갱신하니까
+
+  - 가만히 있으면 Speed = 0
+  - 움직이면 Speed > 0
+
+  그래서 더 단순하게 하려면:
+
+  - Idle 상태를 없애고
+  - 기본 상태를 Locomotion으로 두는 방법도 있습니다
+
+  하지만 이미 연결했다면 그대로 둬도 됩니다.
+
+  5. 현재 가장 쉬운 추천
+  지금은 아래 둘 중 하나로 가세요.
+
+  방법 A: Idle 상태 유지
+
+  - Idle 상태는 Idle.anim
+  - Locomotion Blend Tree에는 Running.anim만 넣지 말고
+      - Idle.anim threshold 0
+      - Running.anim threshold 1
+  - 그래도 동작함
+
+  방법 B: 더 단순하게
+
+  - 기본 상태를 Locomotion
+  - Blend Tree 안에
+      - Idle.anim threshold 0
+      - Running.anim threshold 1
+  - Idle 상태는 안 써도 됨
+
+  지금은 방법 B가 더 덜 헷갈립니다.
+
+  6. 왜 애니메이션이 안 나왔나
+  현재 코드에서 이동 중:
+
+  - PlayerMoveState가 Animator.SetFloat("Speed", 1f or 2f)를 줌
+  - PlayerAnimator도 Speed를 갱신함
+
+  그런데 Blend Tree에 모션이 안 들어 있으면 재생할 게 없습니다.
+
+  7. 바로 해야 할 것
+
+  - Locomotion Blend Tree 안에 Idle과 Running 둘 다 넣기
+  - Parameter = Speed
+  - Threshold = 0, 1
+
+  그리고 나서 다시 플레이해 보세요.
+
+  추가로 한 가지:
+
+  - 현재 PlayerMoveState는 Speed를 1 또는 2로 넣고 있습니다
+  - Blend Tree가 0과 1만 있으면 일단 돌아가지만, 2까지 커버하려면
+      - Running threshold를 1
+      - 또는 Locomotion 범위를 0~2로 생각해도 됩니다
+
+  처음엔 그냥 이렇게 두세요.
+
+  - Idle = 0
+  - Running = 1
+
+  그 후에도 이상하면 그때 Speed 값을 코드에서 정리하면 됩니다.
+
+  다시 해보고 결과를 알려주세요.
+
+  - 이동 애니메이션 나오는지
+  - 좌클릭 공격 되는지
+  - 스페이스 구르기 되는지
+
+
+› 오, 된다. 걸으면 running, 서있으면 idle.
+  근데 문제점.
+  1. 시작 --> 캐릭터가 지면에 반으로 들어가 있고 이상한 상태임. --> 걸으면 idle --> running 스톱하면 running --> idle
+  --> 이상한 지면에 반으로 들어감.
+  2. 걷는거 다 됨. space --> 입력 아무거 안됨. 좌클릭 slash1,2 안됨. 이건 입력을 확인못하는거가? playerControls에서 뭔
+  가 설정해야 하나? 하나씩 차근차근하자 .
+
+
+• 좋습니다. 지금은 이동 애니메이션까지는 정상, 그 다음 문제는 두 갈래입니다.
+
+  - 문제 A: 캐릭터가 지면에 반쯤 박힘
+  - 문제 B: Space, 좌클릭이 안 먹음
+
+  이 둘은 연결돼 있을 가능성이 큽니다.
+  왜냐하면 캐릭터가 지면 판정을 이상하게 받으면 FallState로 자꾸 들어가고, 그러면 공격/구르기 입력이 막힐 수 있기 때문입
+  니다.
+
+  먼저 A부터 해결해야 합니다.
+
+  1단계: 지면 박힘 먼저 수정
+  Unity에서 Player 오브젝트의 CharacterController를 확인하세요.
+
+  권장값:
+
+  - Height = 2
+  - Radius = 0.4 ~ 0.5
+  - Center Y = 1
+
+  그리고 같이 확인:
+
+  - 플레이어 모델 자식 오브젝트의 Transform.localPosition.y
+  - 모델이 너무 아래로 내려가 있으면 반쯤 박혀 보입니다
+
+  즉 구조는 보통 이렇게 맞습니다.
+
+  - Player 루트: 위치/CharacterController 담당
+  - 모델 자식: 시각 표현 담당
+  - 모델 자식의 Y 오프셋을 약간 조정해서 발바닥이 바닥에 맞게
+
+  추가로 꼭 확인:
+
+  - Animator의 Apply Root Motion은 꺼두기
+
+  지금 이상 증상은 Idle 들어갈 때 특히 심해진다고 했으니,
+  Apply Root Motion이 켜져 있으면 애니메이션 루트 때문에 바닥으로 끌려들어갈 수 있습니다.
+
+  즉 바로 확인할 것:
+
+  1. CharacterController 값
+  2. 모델 자식의 Y 위치
+  3. Apply Root Motion 꺼짐 여부
+
+  2단계: 그 다음 입력 확인
+  중요: 지금 코드상 Space와 좌클릭은 PlayerControls 에셋을 안 씁니다.
+
+  현재 기준:
+
+  - Space는 PlayerInputHandler 내부 InputActionMap에서 직접 처리
+  - 좌클릭 공격은 Mouse.current.leftButton.wasPressedThisFrame로 직접 처리
+
+  즉 PlayerControls 설정 문제는 아닐 가능성이 높습니다.
+
+  지금 공격/구르기가 안 되는 주요 후보는 이쪽입니다.
+
+  - CursorManager가 커서를 unlock 상태로 두고 있음
+  - PlayerStateMachine이 FallState에 자꾸 들어감
+  - dodgeData/staminaData는 연결됐지만 값이 이상함
+  - Animator 전이는 만들었지만 실제 파라미터가 안 들어감
+
+  3단계: 아주 간단한 확인
+  플레이 중 아래를 확인해 주세요.
+
+  1. 시작하자마자 커서가 잠겨 있나요?
+
+  - 마우스가 화면에 보이면 unlock 상태일 가능성이 큼
+  - unlock 상태면 공격/구르기 입력을 무시하도록 코드가 되어 있음
+
+  2. Space 눌러도 아무 반응 없을 때
+
+  - 캐릭터가 공중 상태처럼 보이나요?
+  - 멈춰 있을 때도 살짝 떨리거나 바닥에 박히나요?
+  - 그러면 접지 판정부터 의심해야 합니다
+
+  지금 바로 해볼 체크
+
+  - Animator.Apply Root Motion 끄기
+  - CharacterController.Center = (0,1,0) 확인
+  - 모델 자식 오브젝트 Y값 조정
+  - 플레이 시작 후 커서가 숨겨져 있는지 확인
+
+  이 4개 먼저 해보세요.
+  그 다음 결과를 이렇게 알려주세요.
+
+  - Apply Root Motion 켰는지/껐는지
+  - CharacterController 값
+  - 커서가 잠겨 있는지
+  - 지면 박힘이 해결됐는지
+
+  그 결과 보고 바로 다음 단계로 Space와 좌클릭을 잡겠습니다.
+
+
+› 문제가 계속된다. 어떤부분을 어떻게 해야 할지 모르겠다, 먼저 너 소스부터 확인가능? 실제 해결방안을 알려줘 , 내가 어떤
+  부분 잘못했는지
+
+
+• 원인을 코드 기준으로 좁혔습니다. 지금 증상은 단순 설정 실수 하나라기보다, 접지 판정과 입력 처리가 모두 거칠게 구현돼
+  있어서 씬 세팅 차이에 취약한 상태입니다. 이 두 부분을 코드에서 더 안정적으로 바꾸겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerStateMachine.cs
+  └ using UnityEngine;
+
+    … +140 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerInputHandler.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +99 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran rg -n "JumpPressed|InteractPressed|Mouse.current|CheckGround\(|IsGrounded =" .\Assets\_Project\Scripts
+  └ .\Assets\_Project\Scripts\Player\PlayerAnimator.cs:18:    private static readonly int HashIsGrounded =
+    Animator.StringToHash("isGrounded");
+    … +21 lines (ctrl + t to view transcript)
+    .\Assets\_Project\Scripts\Player\States\PlayerMoveState.cs:31:            if (Mouse.current != null &&
+    Mouse.current.leftButton.wasPressedThisFrame)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 실제 해결을 위해 코드 쪽을 더 안전하게 바꾸겠습니다. 핵심은 두 가지입니다. 좌클릭을 상호작용과 분리해서 전투 전용 입력
+  으로 만들고, 잘못된 접지 판정을 CharacterController.isGrounded 기반으로 교체하겠습니다.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 입력 처리 코드는 바꿨고, 상태 파일들이 아직 예전 입력 경로를 보고 있습니다. 이 부분을 맞춰서 Space와 좌클릭이 상태머신
+  으로 들어가게 수정하겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerIdleState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +49 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerMoveState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +72 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerDodgeState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +59 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerLightAttackState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +97 lines (ctrl + t to view transcript)
+    }
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 상태 파일 일부가 깨진 주석 때문에 부분 패치가 안 맞았습니다. 파일 전체를 안정적인 버전으로 교체해서 입력 경로를 통일하
+  겠습니다.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 입력과 접지 쪽 코드는 수정했습니다. 이제 컴파일이 유지되는지 확인하고, Unity에서 다시 테스트할 기준을 드리겠습니다.
+
+• Ran dotnet build .\Assembly-CSharp.csproj
+  └   복원할 프로젝트를 확인하는 중...
+      복원할 모든 프로젝트가 최신 상태입니다.
+    … +71 lines (ctrl + t to view transcript)
+
+    경과 시간: 00:00:18.52
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 코드 쪽 실제 해결을 넣었습니다. 지금 바뀐 핵심은 두 가지입니다.
+
+  - Space와 좌클릭을 상태머신용 입력으로 분리
+      - Space는 DodgePressed
+      - 좌클릭은 AttackPressed
+      - E만 상호작용으로 유지
+  - 접지 판정을 임의 CheckSphere에서 CharacterController.isGrounded로 교체
+      - 이게 캐릭터가 바닥에 박히는 원인의 가장 유력한 코드 문제였습니다
+
+  수정된 파일:
+
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/PlayerInputHandler.cs
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/PlayerStateMachine.cs
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerIdleState.cs
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerMoveState.cs
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerDodgeState.cs
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerLightAttackState.cs
+
+  그리고 빌드는 정상입니다.
+
+  이제 Unity에서 바로 다시 확인할 것만 짧게 적겠습니다.
+
+  1. 플레이 시작 후 캐릭터가 여전히 바닥에 반쯤 박히는지
+  2. Space 눌렀을 때 Dodge 애니메이션이 나오는지
+  3. 좌클릭 시 Slash1로 진입하는지
+
+  만약 지금도 Space/좌클릭이 안 되면, 그때는 코드보다 Animator 전이 조건이 남은 문제일 가능성이 큽니다. 그 경우 다음으로
+  는 Animator 창에서 Parameters 값이 실제로 바뀌는지까지 확인하면 바로 잡을 수 있습니다.
+
+  우선 지금 상태 그대로 Unity에서 다시 한 번 플레이해보세요. 결과만 알려주시면 다음 진단으로 바로 이어가겠습니다.
+
+
+› 굿굿~.
+  1. 좌클릭됨 --> slash1만 되는듯?
+  2. space 구르기 됨 --> 속도가 약간 늦음 그리고 구르는동안 캐릭터가 붕 떠있는느낌, 이건 추후에 천천이 조정하면 될듯.
+  3. 캐릭터가 시작하면 푹 빠지는거 그대로임. 이건 다른 문제인거 같다,, 시작하면 idle상태가 계속 반복되는거 아니라서 그
+  런건가? 아, 찾았다. idle에 내가 animation을 넣어 놓지 않아 그럼,, 하하.
+
+  자 이제 해결됐다. heavyatk은 어떤 키를 누르게 했나? d
+
+
+• 지금 코드 기준으로 HeavyAttack은 아직 입력 연결이 안 되어 있습니다.
+  즉, 애니메이터 전이는 있어도 실제로 트리거를 쏘는 입력 코드가 없습니다.
+
+  현재 연결된 건:
+
+  - 이동: WASD
+  - 공격: 좌클릭
+  - 구르기: Space
+  - 상호작용: E
+
+  HeavyAttack은 아직 “어떤 키”도 안 먹도록 되어 있습니다.
+
+  그리고 d는 아닙니다.
+  d는 이동 입력의 오른쪽입니다.
+
+  다음으로 할 수 있는 가장 간단한 방법은:
+
+  - 우클릭 또는
+  - Shift + 좌클릭 또는
+  - Q
+
+  중 하나로 강공격을 붙이는 겁니다.
+
+  제 추천:
+
+  - 우클릭 = 강공격
+
+  이유:
+
+  - 직관적이고 테스트하기 편함
+  - 현재 좌클릭 약공격과도 잘 분리됨
+
+  원하시면 제가 바로 다음 단계로
+
+  - 우클릭 -> HeavyAttack
+    입력까지 코드에 붙여드리겠습니다.
+
+
+› 좋아, 우클릭은 추후에 패링을 넣고 싶어서, Shift + 좌클릭으로 가자 .
+
+
+• 강공격 입력을 Shift + 좌클릭으로 붙이겠습니다. 기존 약공격과 충돌하지 않도록 입력 계층과 상태 진입 분기를 함께 수정하
+  겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerIdleState.cs
+  └ using UnityEngine;
+
+    … +40 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerInputHandler.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +112 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerHeavyAttackState.cs
+  └ using UnityEngine;
+
+    … +64 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerMoveState.cs
+  └ using UnityEngine;
+    using UnityEngine.InputSystem;
+    … +65 lines (ctrl + t to view transcript)
+    }
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 강공격은 별도 액션을 만들 필요 없이 현재 입력 상태에서 Shift가 눌린 상태의 좌클릭을 구분하면 됩니다. 그 방식으로 최소
+  수정하겠습니다.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 이제 Idle/Move 상태에서 HeavyAttackPressed를 먼저 보게 바꾸겠습니다. 약공격보다 우선 판정해야 Shift + 좌클릭이 제대로
+  분기됩니다.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 강공격 분기 추가는 끝났습니다. 컴파일 확인만 하고 넘기겠습니다.
+
+• Ran dotnet build .\Assembly-CSharp.csproj
+  └   복원할 프로젝트를 확인하는 중...
+      복원할 모든 프로젝트가 최신 상태입니다.
+    … +71 lines (ctrl + t to view transcript)
+
+    경과 시간: 00:00:09.89
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 강공격 입력을 Shift + 좌클릭으로 붙였습니다. 빌드도 정상입니다.
+
+  변경 내용:
+
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/PlayerInputHandler.cs
+      - 좌클릭 시 Shift가 눌려 있으면 HeavyAttackPressed
+      - 아니면 기존처럼 AttackPressed
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerIdleState.cs
+  - D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerMoveState.cs
+      - HeavyAttackPressed를 약공격보다 먼저 검사해서 HeavyAttackState로 진입
+
+  이제 Unity에서 확인할 건 두 가지만 남습니다.
+
+  1. Animator에 HeavyAttack 트리거 전이가 실제로 연결돼 있는지
+  2. heavyAttackData에 HeavyAtk 애니메이션이 연결돼 있는지
+
+  테스트 방법:
+
+  - Shift + 좌클릭 입력
+  - 기대 결과: HeavyAttack 상태 진입 + HeavyAtk 애니메이션 재생
+
+  추가로, 현재 약공격이 Slash1만 되는 건 정상일 수 있습니다. Slash2까지 가려면:
+
+  - Animator에서 LightAttack_1 -> LightAttack_2 전이 조건에 Attack 트리거가 있어야 하고
+  - 타이밍이 comboWindowStart ~ comboWindowEnd 안에 맞아야 합니다
+
+  먼저 Shift + 좌클릭 강공격부터 확인해보세요. 결과 알려주시면 다음은
+
+  - Slash1 -> Slash2 콤보
+  - 구르기 속도/부유감 조정
+  - 지면 박힘 잔여 이슈
+    순으로 들어가면 됩니다.
+
+
+› Parameter 'HeavyAttack' does not exist.
+  UnityEngine.Animator:SetTrigger (string)
+  PlayerHeavyAttackState:Enter (PlayerStateMachine) (at Assets/_Project/Scripts/Player/States/
+  PlayerHeavyAttackState.cs:21)
+  PlayerStateMachine:TransitionTo (IPlayerState) (at Assets/_Project/Scripts/Player/PlayerStateMachine.cs:88)
+  PlayerIdleState:Update (PlayerStateMachine) (at Assets/_Project/Scripts/Player/States/PlayerIdleState.cs:32)
+  PlayerStateMachine:Update () (at Assets/_Project/Scripts/Player/PlayerStateMachine.cs:77)
+
+  라고 에러가 난당.
+
+
+• 원인은 명확합니다.
+  코드는 HeavyAttack 트리거를 보내는데, Animator Controller의 Parameters에 HeavyAttack이 없습니다.
+
+  즉 Unity에서 이것만 추가하면 됩니다.
+
+  해야 할 것:
+
+  1. PlayerAnimator.controller 열기
+  2. Parameters 탭으로 가기
+  3. + 눌러서 Trigger 추가
+  4. 이름을 정확히 HeavyAttack 으로 입력
+
+  중요:
+
+  - Heavy Attack
+  - heavyAttack
+  - Heavyattack
+    전부 안 됩니다. 꼭 HeavyAttack
+
+  그 다음 전이도 있어야 합니다.
+
+  - Idle -> HeavyAttackState(또는 HeavyAtk 상태) 조건: HeavyAttack
+  - Locomotion -> HeavyAttackState 조건: HeavyAttack
+  - HeavyAttackState -> Idle/Locomotion 는 Has Exit Time 켜서 복귀
+
+  즉 지금 에러는 코드 문제 아니고 Animator 설정 누락입니다.
+
+  정리:
+
+  - Attack 트리거는 있었음
+  - Dodge 트리거도 있었음
+  - HeavyAttack 트리거만 빠져 있었음
+
+  이거 추가하고 다시 Shift + 좌클릭 해보세요.
+  되면 다음은 Slash2 콤보 연결 보겠습니다.
+
+
+› 된다, 내가 HeavyAkt로 해서 안됐다. 수정해서 잘된다. Slash2 콤보 연결가자
+
+
+• 이제 약공격 콤보를 보겠습니다. Slash2가 안 나오는 건 거의 Attack 트리거 전이/Exit Time/콤보 입력 타이밍 셋 중 하나입니
+  다. 먼저 현재 코드 조건과 필요한 Animator 전이를 기준으로 정확히 맞춰드리겠습니다.
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Combat\AttackData.cs
+  └ using UnityEngine;
+
+    … +55 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\States\PlayerLightAttackState.cs
+  └ using UnityEngine;
+
+    … +87 lines (ctrl + t to view transcript)
+    }
+
+
+• Ran Get-Content -Raw -Path .\Assets\_Project\Scripts\Player\PlayerStateMachine.cs
+  └ using UnityEngine;
+
+    … +139 lines (ctrl + t to view transcript)
+    }
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 좋습니다. 지금 콤보는 코드상 이미 준비돼 있고, 남은 건 사실상 Animator와 AttackData 타이밍 정렬입니다.
+
+  현재 코드가 콤보를 처리하는 방식은 이렇습니다.
+
+  - Slash1 재생 중
+  - comboWindowStart ~ comboWindowEnd 사이에 다시 좌클릭하면 comboQueued = true
+  - Slash1이 끝날 때
+      - CurrentComboIndex 증가
+      - 다시 LightAttackState 진입
+      - 그때 lightAttacks[1]를 읽음
+  - 즉 두 번째 공격은 Slash2용 AttackData를 읽어야 합니다
+
+  그래서 체크할 건 4개입니다.
+
+  1. PlayerStateMachine.lightAttacks 배열
+  Inspector에서 확인:
+
+  - Element 0 = Slash1용 AttackData
+  - Element 1 = Slash2용 AttackData
+
+  순서가 틀리면 안 됩니다.
+
+  2. Slash1용 AttackData, Slash2용 AttackData 각각 확인
+
+  - Slash1용 AttackData.animationClip = Slash1.anim
+  - Slash2용 AttackData.animationClip = Slash2.anim
+
+  3. Animator 전이
+  지금 가장 중요합니다.
+
+  Animator에서 아래가 있어야 합니다.
+
+  - Idle -> Slash1 조건: Attack
+  - Locomotion -> Slash1 조건: Attack
+  - Slash1 -> Slash2 조건: Attack
+  - Slash2 -> Idle 또는 Slash2 -> Locomotion 복귀 전이
+
+  중요:
+
+  - Slash1 -> Slash2 전이에는 Attack 조건이 있어야 합니다
+  - Has Exit Time은 켜는 쪽이 안전합니다
+  - Exit Time은 대략 0.5 ~ 0.8 범위에서 시작
+
+  4. Slash1용 AttackData의 콤보 윈도우
+  처음엔 이렇게 맞추세요.
+
+  - comboWindowStart = 0.35
+  - comboWindowEnd = 0.8
+
+  그리고 테스트는:
+
+  - 좌클릭 1번
+  - Slash1 도중 살짝 늦게 좌클릭 1번 더
+
+  너무 빨리 누르면 안 잡히고, 너무 늦으면 이미 창이 끝납니다.
+
+  ———
+
+  지금 가장 실무적으로 할 일은 이것입니다.
+
+  1. PlayerStateMachine.lightAttacks 배열 2개 들어있는지 확인
+  2. Slash1 -> Slash2 전이에 Attack 조건 있는지 확인
+  3. Slash1 AttackData의 comboWindowStart/end를 0.35 / 0.8 정도로 맞추기
+  4. Slash2 상태의 Motion이 실제 Slash2.anim인지 확인
+
+  ———
+
+  추가로 한 가지 중요한 점:
+  현재 코드는 Animator.SetTrigger("Attack")를 1타, 2타 둘 다 같은 트리거로 씁니다.
+  즉 Animator 쪽이 “현재 Slash1 상태일 때 Attack이 다시 들어오면 Slash2로 간다”를 전이로 가지고 있어야 합니다.
+
+  원하시면 다음 답변에서 제가
+  Animator에서 Slash1 -> Slash2 전이를 어떻게 딱 설정해야 하는지
+  한 단계씩 클릭 기준으로 적어드리겠습니다.
+
+
+› 응, slash1-->slash2가 안나옴,ㅎㅎ.
+  이거 animator에서 어떻게 설정하지?
+
+
+• 합니다. 이건 거의 Animator 전이 설정 문제입니다.
+  아래 순서대로 하면 됩니다.
+
+  1. 상태 확인
+  Animator 안에 최소 이 상태가 있어야 합니다.
+
+  - Slash1
+  - Slash2
+
+  각 상태의 Motion 확인:
+
+  - Slash1 상태 = Slash1.anim
+  - Slash2 상태 = Slash2.anim
+
+  2. Attack 파라미터 확인
+  Parameters 탭에
+
+  - Attack : Trigger
+    가 있어야 합니다.
+
+  3. Slash1 -> Slash2 전이 만들기
+
+  - Slash1 우클릭
+  - Make Transition
+  - Slash2 클릭
+
+  4. Slash1 -> Slash2 전이 설정
+  전이 화살표를 클릭하고 Inspector에서 아래처럼 설정하세요.
+
+  - Has Exit Time: 켜기
+  - Exit Time: 0.6 정도부터 시작
+  - Transition Duration: 0.05 ~ 0.1
+  - Fixed Duration: 꺼도 되고 켜도 되는데 기본은 크게 상관 없음
+  - Can Transition To Self: 끄기
+
+  Conditions에 추가:
+
+  - Attack
+
+  즉 조건은 딱 하나:
+
+  - Attack
+
+  5. Slash1 -> Idle도 같이 확인
+  보통 Slash1 -> Idle 전이도 있을 텐데,
+  이게 너무 빨리 일어나면 Slash2로 못 갑니다.
+
+  그래서 Slash1 -> Idle은 이렇게 두는 게 안전합니다.
+
+  - Has Exit Time: 켜기
+  - Exit Time: 0.9 또는 0.95
+  - Conditions 없음
+
+  이렇게 해야:
+
+  - 중간쯤에 Attack이 들어오면 Slash2
+  - 아무 입력 없으면 끝에서 Idle
+
+  6. Slash2 -> Idle 설정
+
+  - Has Exit Time: 켜기
+  - Exit Time: 0.9
+  - Conditions 없음
+
+  7. 제일 중요한 충돌 포인트
+  Slash1 -> Idle이 너무 빠르면 안 됩니다.
+  예를 들어 Exit Time = 0.5로 되어 있으면, 콤보 입력이 들어와도 Idle로 먼저 빠질 수 있습니다.
+
+  처음엔 이렇게 두세요.
+
+  - Slash1 -> Slash2
+      - Attack
+      - Exit Time = 0.6
+  - Slash1 -> Idle
+      - 조건 없음
+      - Exit Time = 0.95
+
+  이 구성이 가장 안전합니다.
+
+  8. 테스트 방법
+
+  - 좌클릭 한 번
+  - Slash1 모션 중간쯤에 한 번 더 좌클릭
+
+  너무 빠르게 두 번 누르면 안 잡힐 수 있습니다.
+  처음엔 “탁, 탁” 템포로 해보세요.
+
+  9. 안 되면 바로 볼 것
+  안 되면 아래 둘 중 하나입니다.
+
+  - Slash1 -> Slash2 전이에 Attack 조건이 빠졌음
+  - Slash1 -> Idle이 너무 빨라서 먼저 빠짐
+
+  원하면 다음 답변에서
+  Slash1, Slash2, Idle 세 상태 기준으로
+  전이 화살표를 어떻게 몇 개 두면 되는지 아주 단순한 구조도로 적어드리겠습니다.
+
+
+› 이거 애니메이션 시간이랑 exit 타임이 맞지 않아서 그런거 같은데? 애니메이션도중에 다른걸 하게 만드는게 맞지 않나?
+  똑같게 구르기 dodge있잖아, 이거 dodge도중에 wasd누르면 캐릭터가 animation도중에 wasd에 따라 막 움직임.
+
+
+• 맞습니다. 지금 보신 판단이 맞습니다.
+
+  문제는 두 종류입니다.
+
+  1. Slash1 -> Slash2
+
+  - 이건 말씀하신 대로 Exit Time과 입력 타이밍이 안 맞아서 생기는 문제가 큽니다.
+  - 콤보는 “애니메이션이 끝난 뒤”가 아니라 “애니메이션 도중 특정 구간에 다음 입력을 예약”하는 게 맞습니다.
+  - 지금 코드도 그렇게 만들려는 구조입니다.
+  - 다만 Animator 전이가 그 구조를 제대로 못 따라가고 있습니다.
+
+  2. Dodge 중 WASD 흔들림
+
+  - 이것도 맞는 지적입니다.
+  - 구르기 중에는 입력 방향이 바뀌어도 캐릭터가 흔들리면 안 됩니다.
+  - 도중에 방향 고정되어야 자연스럽습니다.
+  - 이건 Animator 문제가 아니라 코드/루트모션/상태머신 쪽 문제일 가능성이 큽니다.
+
+  ———
+
+  ### 먼저 결론
+
+  지금 단계에서 콤보를 안정적으로 만들려면,
+  Slash1 -> Slash2 같은 공격 연계는 Animator 전이에 너무 의존하지 않는 쪽이 낫습니다.
+
+  즉 현재 구조에서는:
+
+  - LightAttackState가 이미 CurrentComboIndex를 올리고
+  - 다시 SetTrigger("Attack")를 날리는데
+  - Animator에서 Slash1 -> Slash2를 직접 맞추려 하니까 타이밍 충돌이 납니다
+
+  이럴 때는 보통 두 방식 중 하나를 씁니다.
+
+  방식 A
+
+  - Slash1, Slash2, Slash3 상태를 Animator에 두고
+  - 전이도 Animator에서 세밀하게 제어
+
+  방식 B
+
+  - 코드가 현재 공격 인덱스를 들고 있고
+  - Animator에는 AttackIndex 같은 int를 주거나
+  - 아예 상태별로 직접 재생
+
+  지금 구조는 A와 B가 반쯤 섞여 있습니다.
+  그래서 어색합니다.
+
+  ———
+
+  ### 지금 가장 현실적인 해결
+
+  현재는 빠르게 안정화하려면 이렇게 가는 게 좋습니다.
+
+  콤보
+
+  - Slash1 -> Slash2를 직접 Animator에서 연결하지 말고
+  - Any State -> Slash1, Any State -> Slash2로 나누는 건 비추
+  - 대신 지금은 임시로:
+      - Slash1 -> Slash2 전이 유지
+      - Has Exit Time 켜기
+      - Exit Time은 0.65 전후
+      - Attack 조건 사용
+  - 하지만 장기적으로는 코드에서 더 강하게 제어하는 쪽이 낫습니다
+
+  구르기
+
+  - DodgeState 중에 WASD로 캐릭터가 다시 흔들린다면
+  - 먼저 확인할 것은:
+      - Dodge 애니메이션에 루트모션이 들어있는지
+      - Apply Root Motion이 켜져 있는지
+  - 현재 코드상 DodgeState.Enter()에서 dodgeDirection은 한 번만 잡고
+    Update()에서는 그 방향으로 계속 Move()하므로
+    코드만 보면 방향은 고정되어야 맞습니다.
+  - 따라서 실제 흔들림은 대개:
+      - Animator 루트모션
+      - 다른 스크립트가 같이 회전/이동
+      - Blend Tree/Locomotion 전이가 너무 빨리 끼어듦
+        중 하나입니다.
+
+  ———
+
+  ### 내가 보는 우선순위
+
+  1. Dodge 중 흔들림부터 먼저 잡는 게 낫습니다
+  2. 그 다음 Slash2 콤보를 손보는 게 맞습니다
+
+  이유:
+
+  - 구르기 흔들림은 명백한 버그
+  - 콤보는 타이밍 조정 문제라서 그 다음이 맞음
+
+  ———
+
+  ### 지금 바로 확인할 것
+
+  Unity에서 이것만 먼저 확인해 주세요.
+
+  1. Animator의 Apply Root Motion 꺼져 있는지
+  2. Dodge 상태에서 Has Exit Time이 너무 빨라서 Locomotion으로 중간 복귀하지 않는지
+  3. Player에 아직 이동/회전에 개입하는 구형 스크립트가 남아 있지 않은지
+  4. Roll 애니메이션 자체가 제자리인지, 루트 이동이 들어있는지
+
+  ———
+
+  ### 내 제안
+
+  다음은 순서대로 가겠습니다.
+
+  1. 먼저 Dodge 흔들림 원인 진단
+  2. 그 다음 Slash2 콤보를 코드/Animator 기준으로 안정화
+
+  원하면 바로 다음 답변에서
+  Dodge 중 WASD 흔들림을 잡기 위한 체크리스트를 짧고 정확하게 드리겠습니다.
+
+
+› 좋아 dodge 중 wasd 흔들림부터 잡자
+
+
+• 좋습니다. Dodge 중 흔들림은 먼저 원인을 분리해야 합니다.
+  지금 코드만 보면 DodgeState에서는 방향을 한 번 정하고 계속 그 방향으로만 움직여야 합니다.
+  그래서 흔들림은 보통 아래 3개 중 하나입니다.
+
+  - 루트모션이 개입함
+  - Animator 전이가 중간에 Locomotion으로 섞임
+  - 다른 컴포넌트가 계속 회전/이동을 건드림
+
+  먼저 이 순서대로 확인하세요.
+
+  1. Apply Root Motion 끄기
+  플레이어의 Animator에서:
+
+  - Apply Root Motion 체크 해제
+
+  이게 가장 먼저입니다.
+  구르기 애니메이션에 전진/회전 데이터가 들어 있으면 코드 이동과 충돌해서 흔들립니다.
+
+  2. 구형 이동 스크립트가 정말 없는지 재확인
+  Player에 아래가 남아 있으면 안 됩니다.
+
+  - PlayerMovement
+  - PlayerController
+  - PlayerCombat
+  - Rigidbody
+
+  남아 있으면 DodgeState와 동시에 움직임을 만들 수 있습니다.
+
+  3. Dodge 상태 전이 확인
+  Animator에서 Dodge 상태를 클릭해서 확인:
+
+  - Idle -> Dodge
+  - Locomotion -> Dodge
+  - Dodge -> Idle 또는 Dodge -> Locomotion
+
+  여기서 중요한 건:
+
+  - Dodge -> Locomotion/Idle는 Has Exit Time 켜기
+  - Exit Time을 너무 짧게 두지 않기
+  - 최소 0.9 정도로 두기
+
+  즉 구르기 도중엔 다른 상태가 끼어들지 않게 해야 합니다.
+
+  4. Dodge 상태로 들어가면 Move/Idle로 바로 빠지지 않는지
+  Animator에서 Locomotion -> Dodge는 괜찮지만,
+  반대로 Dodge -> Locomotion가 너무 빨리 열려 있으면
+  구르기 중간부터 이동 애니메이션과 섞여 흔들립니다.
+
+  처음엔 이렇게 두세요.
+
+  - Dodge -> Idle
+      - Has Exit Time = On
+      - Exit Time = 0.95
+      - 조건 없음
+  - Dodge -> Locomotion는 일단 지우거나 나중에 붙이기
+
+  즉 처음엔 Dodge 끝나면 무조건 Idle로 돌아가게 하세요.
+
+  5. Roll 애니메이션 자체 확인
+  애니메이션 창에서 Roll.anim을 보면
+
+  - 캐릭터가 제자리에서 구르나요?
+  - 아니면 애니메이션 자체가 전진/회전하나요?
+
+  전진/회전이 애니메이션에 baked되어 있으면
+  지금처럼 코드 이동과 같이 쓸 때 충돌이 날 수 있습니다.
+
+  ———
+
+  ### 가장 추천하는 즉시 조치
+
+  지금은 아래만 하세요.
+
+  1. Animator.Apply Root Motion 끄기
+  2. Dodge -> Locomotion 전이 있으면 일단 제거
+  3. Dodge -> Idle만 남기고 Exit Time = 0.95
+  4. Player에 구형 이동 스크립트/Rigidbody 없는지 재확인
+
+  이 4개 하고 다시 테스트해보세요.
+
+  기대 결과:
+
+  - Space 누르면
+  - 현재 바라보는 방향 또는 입력 방향으로
+  - 구르기 동안 방향 고정
+  - WASD를 추가로 눌러도 흔들리지 않음
+
+  그래도 흔들리면 그다음은 코드 쪽에서 Dodge 중 회전/Animator 파라미터 갱신을 더 강하게 차단하겠습니다.
+
+
+› 너의 말대로 1~4번 다했음. 그래도 똑같음.
+  이게 문제가 뭐냐면, 구르기 했을때 애니메이션이 뭔가 앞에 준비하는 시간이 있는듯?
+  구르기 누르면 약 0.2초동안 wasd 안먹힘. 그리고 바로 wasd 풀리면서 캐릭타가 움직임.
+  실제 구르기 애니메이션이 1초정도라면 1초동안 wasd가 눌리면 안되는거 아닌가?
+  그럼 구르기 애니메이션을 1초가 아니라 0.25초로 줄리거나 혹은 1초동안 wasd를 움직이지 않게 하는게 아닌가? 라는 생각이
+  듬.
+  그럼 1. 구르기를 누를때 wasd freeze하는곳이 어디인가?
+  2. 애니메이션 play를 좀더 빠르게 끝내가 하는곳은 어디인가?
+
+
+• 맞습니다. 지금 현상은 거의 확실히 코드의 구르기 상태 유지 시간과 애니메이션 길이가 안 맞아서 생깁니다.
+
+  핵심은 이겁니다.
+
+  - 코드에서는 구르기 상태를 0.75초쯤만 유지
+  - 그런데 Roll 애니메이션은 1초쯤 재생
+  - 그래서 중간부터 상태는 이미 Idle/Move로 돌아가고, 남은 애니메이션 위에 이동 입력이 다시 섞임
+
+  즉 당신 판단이 맞습니다.
+
+  1. WASD freeze하는 곳
+  여기입니다:
+  D:/200_Creative/210_GameDev/211_Study_Exercises_unity/SLXS_EP01/Assets_Project/Scripts/Player/States/
+  PlayerDodgeState.cs
+
+  특히 이 부분:
+
+  if (timer >= data.totalDuration + data.recoveryTime)
+  {
+      player.TransitionTo(player.IdleState);
+  }
+
+  현재 의미:
+
+  - totalDuration 동안 구르기 이동
+  - recoveryTime까지 포함한 시간이 지나면 구르기 종료
+  - 그 후 다시 Idle/Move로 가서 WASD가 먹음
+
+  즉 “WASD freeze 시간”은 사실상:
+
+  - dodgeData.totalDuration + dodgeData.recoveryTime
+
+  입니다.
+
+  2. 애니메이션 play를 더 빨리 끝내는 곳
+  이건 코드보다 Animator 쪽입니다.
+
+  조절 위치는 보통 2군데:
+
+  - Animator의 Dodge 상태 Speed
+  - 애니메이션 클립 자체 속도
+
+  Unity에서 보는 위치:
+
+  - Animator 창에서 Dodge 상태 클릭
+  - Inspector의 Speed
+
+  예를 들어:
+
+  - Speed = 1 기본
+  - Speed = 2면 2배 빨리 재생
+
+  ———
+
+  ### 지금 가장 맞는 해결 방향
+
+  둘 중 하나로 맞추면 됩니다.
+
+  방법 A: 애니메이션 길이에 코드 시간을 맞춘다
+  가장 추천입니다.
+
+  예:
+
+  - Roll 애니메이션이 체감 1초면
+  - DodgeData.totalDuration = 0.85 ~ 1.0
+  - recoveryTime = 0.05 ~ 0.15
+
+  즉 코드가 애니메이션 끝날 때까지 구르기 상태를 유지하게 만듭니다.
+
+  방법 B: 애니메이션을 코드 시간에 맞게 더 빠르게 재생한다
+  예:
+
+  - 지금 코드가 0.75초쯤 끝난다면
+  - Animator Dodge 상태 속도를 올려서 애니메이션도 그쯤 끝나게
+
+  ———
+
+  ### 현재 프로젝트에선 A가 더 낫습니다
+
+  이유:
+
+  - 구르기 판정, 무적시간, 이동거리까지 DodgeData가 기준이기 때문
+  - 그래서 DodgeData를 기준으로 맞추는 게 구조상 깔끔합니다
+
+  ———
+
+  ### 지금 바로 바꿔볼 값
+
+  DodgeData 에셋에서 이렇게 시도해보세요.
+
+  1차 테스트:
+
+  - totalDuration = 0.9
+  - recoveryTime = 0.1
+  - iFrameStart = 0.05
+  - iFrameDuration = 0.3
+
+  이렇게 하면 대략 1초 동안 구르기 상태가 유지됩니다.
+
+  ———
+
+  ### 추가로 체크할 것
+
+  Dodge -> Idle Animator 전이도 같이 맞춰야 합니다.
+
+  - Has Exit Time = On
+  - Exit Time = 0.9 ~ 0.95
+
+  코드가 1초 유지인데 Animator가 0.4초에 빠져버리면 또 어긋납니다.
+
+  ———
+
+  ### 정리
+
+  - WASD freeze 시간: PlayerDodgeState.cs의 totalDuration + recoveryTime
+  - 애니메이션 재생 속도: Animator의 Dodge 상태 Speed
+  - 현재 문제 원인: 코드 구르기 시간과 애니메이션 길이 불일치
+
+  제 추천:
+
+  - 먼저 DodgeData.totalDuration/recoveryTime부터 늘려서 애니메이션 길이에 맞추기
+
+  원하면 다음 답변에서
+  DodgeData 각 필드를 지금 프로젝트 기준으로 어느 값부터 잡으면 좋은지 바로 추천값으로 적어드리겠습니다.
+
+
+› dodge 애니메이션 타임 어디서 보나?
+
+
+• Unity에서 바로 볼 수 있습니다.
+
+  방법 1. Roll.anim 선택
+
+  - Project 창에서 Roll.anim 클릭
+  - Inspector에서 Length 또는 재생 시간 표시 확인
+
+  방법 2. Animator 상태에서 확인
+
+  - PlayerAnimator.controller 열기
+  - Dodge 상태 클릭
+  - 연결된 Motion이 Roll.anim인지 확인
+  - 그 다음 Project 창에서 그 Roll.anim을 직접 클릭해서 길이 확인
+
+  방법 3. Animation 창
+
+  - 플레이어 오브젝트 선택
+  - Window > Animation > Animation
+  - 클립을 Roll로 바꾸면 타임라인 길이로 볼 수 있음
+
+  가장 쉬운 건 이겁니다.
+
+  - Project 창에서 Assets/Animations/Roll.anim 클릭
+  - Inspector에서 길이 확인
+
+  참고:
+
+  - 만약 Roll.anim이 아니라 fbx 안의 임포트된 클립이면
+      - 그 fbx 클릭
+      - Animations 탭에서 클립 길이 확인
+
+  확인 후 그 길이를 알려주시면 제가 DodgeData.totalDuration, recoveryTime, Animator Exit Time을 맞는 값으로 바로 추천해
+  드리겠습니다.
+
+
+› Length 2.367이면 이거 맞지? 30FPS로 되있음. 구르기 하면 2.367이면 너무 긴거아니야? ㅎㅎㅎ
+
+
+• 맞습니다. Length 2.367이면 현재 구르기용으로는 너무 깁니다.
+
+  2.367초면 거의:
+
+  - 회피기라기보다
+  - 긴 롤 연출이나
+  - 느린 액션 애니메이션에 가깝습니다
+
+  지금 느낌이 이상했던 이유가 정확히 설명됩니다.
+
+  - 코드 구르기 상태는 대략 0.7~1초
+  - 애니메이션은 2.367초
+  - 그래서 중간부터 상태와 애니메이션이 완전히 어긋난 겁니다
+
+  지금 선택지는 2개입니다.
+
+  1. 애니메이션 재생 속도를 올린다
+  가장 간단합니다.
+
+  예를 들어 목표를 대략 0.8초 정도로 잡으면:
+
+  - 2.367 / 0.8 ≈ 2.96
+
+  즉 Animator의 Dodge 상태 Speed를 대략 3.0 근처로 올리면 됩니다.
+
+  처음 추천값:
+
+  - Dodge state Speed = 3.0
+
+  그러면 체감상 꽤 회피기처럼 됩니다.
+
+  2. 애니메이션 클립 자체를 자르거나 다른 클립을 쓴다
+  이건 나중에 하는 게 낫습니다.
+  지금은 빠른 테스트가 우선이라서 비추천입니다.
+
+  ———
+
+  ### 지금 제 추천
+
+  바로 이렇게 하세요.
+
+  1. Animator에서 Dodge 상태 클릭
+  2. Inspector에서 Speed = 3
+  3. DodgeData는 이렇게 맞춰보기
+
+  - totalDuration = 0.75
+  - recoveryTime = 0.1
+  - iFrameStart = 0.03
+  - iFrameDuration = 0.25
+
+  4. Dodge -> Idle 전이
+
+  - Has Exit Time = On
+  - Exit Time = 0.95
+
+  ———
+
+  ### 왜 이렇게 하냐
+
+  - 애니메이션은 빨리 재생해서 회피기처럼 보이게 하고
+  - 상태 지속 시간도 짧게 맞춰서
+  - 입력 잠금/움직임 재개 타이밍을 자연스럽게 맞추기 위해서입니다
+
+  ———
+
+  ### 결론
+
+  네, 2.367초는 구르기치고 너무 깁니다.
+  그래서 지금은 클립 교체보다 Animator 상태 속도 증가가 가장 현실적인 해결입니다.
+
+  먼저 Dodge Speed = 3으로 해보세요.
+  해보고 체감이 너무 빠르면 2.5, 느리면 3.2 이런 식으로 조절하면 됩니다.
+
+
+› 좋네 좋아. ㅎㅎ 되네, 이거 문제 맞네 이걸 좀더 정확하게 수정해야 겠다. 아,, 이렇게 숨어있는 값들이 게임의 플레이 체감
+  을 확실히 정하는구나,,
+  자, 이 값을 다시 설정할거야, 먼저 엘든링에서 캐릭터가 구르기할때 총 구르는 시간을 알아내야 하거든?이걸 내가 찾아서 너
+  한테 알려줄테니. 이 시간 기준으로 speed의 값으로 2.367초를 엘든링의 구르기 속도로 맞추자. 그러고 나머지 total
+  duration값을 설정하자.
+
+  엘든링의 구르기(닷지 롤) 전체 모션 길이는 대략 **0.6초 내외**입니다. 다만 중요한 건 전체 시간이 아니라 그 안의 내부
+  구조예요:
+
+  - **무적 프레임(i-frames)**: 13프레임 (약 0.43초) — 장비 하중 중량(Light) 기준
+  - **중간 하중(Medium)**: 동일하게 13프레임 무적
+  - **무거운 하중(Heavy) / 팻롤**: 10프레임 (약 0.33초)
+  - **회복(recovery) 프레임**: 구르기 애니메이션이 끝나도 바로 행동 가능한 건 아니고, 뒤에 경직/회복 구간이 붙어서 총
+  모션은 더 길게 느껴짐
+
+  참고로 엘든링은 60fps 기준이라 1프레임 = 약 16.67ms입니다. 다크소울3(Medium 기준 i-frame 13)과 동일하고, 블러드본(18
+  프레임)·세키로(가드 캔슬 스텝)보다는 빠듯한 편이죠.
+
+  혹시 색랑하산 회피 시스템 튜닝 때문에 물어보시는 거면, 무적 프레임과 전체 모션 길이를 분리해서 `DodgeData` SO에 넣는
+  게 좋아요 — `iFrameStart`, `iFrameEnd`, `recoveryEnd` 이런 식으로요. 세키로처럼 스텝 기반으로 갈지, 소울 계열 롤 기반
+  으로 갈지에 따라 숫자가 완전히 달라집니다. 어느 방향으로 가고 계신가요?
+
+
+• 좋습니다. 기준을 이렇게 잡으면 됩니다.
+
+  현재 Roll.anim 길이:
+
+  - 2.367초
+
+  목표 엘든링식 전체 구르기 길이:
+
+  - 0.6초
+
+  그러면 Animator의 Dodge 상태 속도는:
+
+  - 2.367 / 0.6 = 3.945
+
+  즉 대략:
+
+  - Dodge State Speed = 3.95
+  - 실무에선 4.0으로 두고 시작하면 됩니다
+
+  이제 SO 값도 같이 맞추면 됩니다.
+
+  엘든링 기준으로 추천 시작값:
+
+  - iFrameStart = 0.05
+  - iFrameDuration = 0.43
+  - totalDuration = 0.6
+  - recoveryTime = 0.08 ~ 0.12
+  - distance = 현재 체감 보며 조정
+
+  추천 1차 세팅:
+
+  - Animator Dodge Speed = 4.0
+  - DodgeData.totalDuration = 0.6
+  - DodgeData.recoveryTime = 0.1
+  - DodgeData.iFrameStart = 0.05
+  - DodgeData.iFrameDuration = 0.43
+
+  이렇게 두면 코드상 총 상태 유지 시간은:
+
+  - 0.6 + 0.1 = 0.7초
+
+  즉:
+
+  - 시각적으로는 0.6초짜리 빠른 롤
+  - 끝에 약간의 회복 경직 0.1초
+  - 체감은 꽤 소울라이크에 가까워집니다
+
+  중요한 점 하나:
+  당신이 가져온 값에서 0.43초 무적은 꽤 강한 편입니다.
+  게임이 너무 쉬워지면 이렇게 줄이면 됩니다.
+
+  - iFrameDuration = 0.30 ~ 0.36
+
+  즉 방향은 2개입니다.
+
+  - 엘든링 체감 복제: 0.43
+  - 약간 빡빡하게: 0.30~0.36
+
+  제 추천:
+
+  - 일단 1차는 엘든링 레퍼런스 그대로
+  - 플레이해보고 너무 사기 같으면 iFrameDuration만 줄이기
+
+  추가로 구조적으로도 맞는 방향입니다.
+  말씀하신 대로 회피 시스템은 분리해서 보는 게 맞습니다:
+
+  - 시각 재생 속도: Animator Speed
+  - 판정 시간: iFrameStart, iFrameDuration
+  - 조작 경직: totalDuration, recoveryTime
+
+  즉 지금은 이미 좋은 구조로 가고 있습니다.
+
+  바로 적용값 정리:
+
+  - Dodge Animator Speed = 4.0
+  - DodgeData.iFrameStart = 0.05
+  - DodgeData.iFrameDuration = 0.43
+  - DodgeData.totalDuration = 0.6
+  - DodgeData.recoveryTime = 0.1
+
+  원하면 다음은 이 값 기준으로
+
+  - distance
+  - speedCurve
+    까지 엘든링 느낌에 맞게 추천해드리겠습니다.
+
+
+› 오오오 비슷하다비슷하다, 시간이 엘든링에서의 구르기 속도와 비슷하다비슷하다. 자, 근데 캐릭터의 구르기 동장이 처음 천
+  천이 준비하다가 후반에 휙~하고 돌아버려, 즉 구르기 애니메이션에서 처음 시작하는 부분을 약간 빠르게 하고, 뒤에 동작이
+  큰 부분을 약간 천천이 설정하면 좋을거 같은데,, 어떻게 하지??
+
+
+• 그건 DodgeData.speedCurve로 조절하면 됩니다.
+  지금 현상은 애니메이션 속도와 별개로, 코드 이동 속도 곡선이 뒤쪽에 몰려 있거나 반대로 애니메이션의 포즈 진행과 안 맞는
+  상태입니다.
+
+  핵심은:
+
+  - 애니메이션 재생 속도: Animator Dodge Speed
+  - 실제 이동 속도 타이밍: DodgeData.speedCurve
+
+  즉 원하는 건:
+
+  - 초반에 빨리 치고 나가고
+  - 후반엔 감속
+
+  이거면 speedCurve를 앞이 높고 뒤가 낮은 형태로 만들면 됩니다.
+
+  ### 원하는 형태
+
+  지금 추천하는 곡선:
+
+  - 시작 직후 빠르게 상승
+  - 중반 최고점
+  - 후반 완만하게 하강
+
+  Unity에서 speedCurve를 이렇게 잡아보세요.
+
+  추천 값 감각:
+
+  - 0.00 -> 0.2
+  - 0.10 -> 1.0
+  - 0.35 -> 1.15
+  - 0.70 -> 0.55
+  - 1.00 -> 0.15
+
+  즉:
+
+  - 처음부터 바로 속도가 붙고
+  - 중간 조금 강하게 밀고
+  - 끝으로 갈수록 미끄러지듯 감속
+
+  ### Unity에서 설정 방법
+
+  DodgeData 에셋 열기 → speedCurve
+
+  기본 EaseInOut 대신 키를 수동으로 만드세요.
+  대충 이 형태면 됩니다:
+
+  - 첫 키: time 0, value 0.2
+  - 둘째 키: time 0.1, value 1.0
+  - 셋째 키: time 0.35, value 1.15
+  - 넷째 키: time 0.7, value 0.55
+  - 다섯째 키: time 1.0, value 0.15
+
+  그리고 탠전트는 너무 부드럽게 말고 적당히 꺾이게 두는 게 좋습니다.
+
+  ### 왜 이게 맞냐
+
+  현재 코드:
+
+  float normalizedTime = timer / data.totalDuration;
+  float curveSpeed = data.speedCurve.Evaluate(normalizedTime);
+  float moveSpeed = (data.distance / data.totalDuration) * curveSpeed;
+
+  즉 speedCurve가 곧 “구르기 중 어느 타이밍에 얼마나 빨리 이동하느냐”를 결정합니다.
+
+  ### 당신이 원하는 느낌으로 번역하면
+
+  - 초반 준비동작 줄이기
+  - 초반 바로 이동량 확보
+  - 후반 큰 구름 포즈는 시각적으로는 남겨두되 실제 이동은 줄이기
+
+  그래서 애니메이션은 유지하고, 코드 이동만 초반 집중형으로 바꾸는 게 정답입니다.
+
+  ### 추가 팁
+
+  만약 여전히 “초반이 느려 보이는” 느낌이 남으면 둘 중 하나를 더 조절하세요.
+
+  1. speedCurve 첫 점 값을 더 올리기
+
+  - 0 -> 0.35 정도
+
+  2. iFrameStart를 약간 줄이기
+
+  - 0.05 -> 0.03
+
+  ### 내 추천 1차 세팅
+
+  - Animator Dodge Speed = 4.0 유지
+  - totalDuration = 0.6 유지
+  - recoveryTime = 0.1 유지
+  - speedCurve만 앞당기기
+
+  원하면 다음 답변에서
+  제가 “엘든링 느낌”, “좀 더 아케이드”, “좀 더 묵직한 소울풍”
+  이렇게 3종 speedCurve 스타일로 나눠서 추천해드릴게요.
+
+
+› 오, 이거 dodgeData랑 slash2AttackData같은 클래스에서 이미 넉백 길이랑 콤보 등등 이런 값들 설정을 다하게 해서, 그냥 값
+  만 잘 조정하면 게임에서의 소리라던가 피격타임같은거 다 설정할수 있게 만들었구나~. 좋다야.
+
+
+• 맞습니다. 지금 구조의 핵심 장점이 그겁니다.
+
+  이미 방향은 꽤 잘 잡혀 있습니다.
+
+  - AttackData
+      - 공격별 애니메이션
+      - 히트박스 타이밍
+      - 데미지 배율
+      - 히트스톱
+      - 카메라 셰이크
+      - 넉백
+      - 콤보 윈도우
+      - SFX 레이어링
+  - DodgeData
+      - 무적 시작/지속
+      - 총 구르기 시간
+      - 회복 시간
+      - 이동 거리
+      - 속도 곡선
+  - StaminaData
+      - 스태미나 최대치
+      - 회복
+      - 고갈 패널티
+  - CombatTuningData
+      - 전역 기본값
+
+  즉 코드의 역할은:
+
+  - 시스템을 실행
+  - 상태를 전환
+  - 데이터를 읽어서 동작
+
+  실제 게임 감각은:
+
+  - 대부분 SO 값 조정으로 만지는 구조입니다
+
+  이게 좋은 이유는 명확합니다.
+
+  - 애니메이션 바뀌어도 코드 대수술이 덜 필요함
+  - 적 공격도 같은 구조 재사용 가능
+  - 플레이어/적/NPC 전투 감각을 한 체계로 관리 가능
+  - 나중에 밸런싱이 엄청 빨라짐
+
+  실제로 지금 당신이 한 작업도 정확히 그 구조의 장점을 타고 있는 겁니다.
+
+  - 구르기 체감 수정
+  - 애니메이션 속도 수정
+  - 타이밍/경직/무적프레임 조정
+
+  이걸 코드가 아니라 데이터로 건드리는 게 맞습니다.
+
+  다만 앞으로 더 좋아지려면 두 가지를 추가로 정리하면 됩니다.
+
+  1. SO 에셋 정리 규칙
+
+  - Attack_Light_01
+  - Attack_Light_02
+  - Attack_Heavy_01
+  - Dodge_Default
+    이런 식으로 이름 통일
+
+  2. 튜닝 기준표
+
+  - 엘든링 기준
+  - 내 게임 최종 기준
+  - 현재 테스트 값
+    이걸 간단히 문서나 표로 남기기
+
+  지금은 꽤 좋은 기반입니다.
+  이제부터는 “코드 작성”보다 “튜닝 철학 정리”가 더 중요해지는 구간에 들어간 겁니다.
+
+  다음으로는 제가 보기엔 이 순서가 좋습니다.
+
+  1. Slash2 콤보 안정화
+  2. HeavyAttack 체감 조정
+  3. 히트박스와 더미 적 붙이기
+  4. 피격/히트스톱/넉백 체감 보기
+
+  원하면 바로 Slash2 콤보 안정화부터 이어가겠습니다.
+
+
+› 먼저 조금더 그리고 전체적으로 안정화 하면 좋겠다. 우선 지금까지의 작업을 commit해놓자 . 나 궁금한게 ScriptableObjs라
+  는것도 커밋하면 git에 올려야 하지??
+
+
+• 지금 상태를 먼저 Git 기준으로 확인하고, 커밋에 포함해야 할 Unity 자산 범위를 정리한 뒤 바로 커밋하겠습니다.
+  ScriptableObject 에셋도 Git에 올리는 게 맞고, 특히 .meta까지 같이 가야 합니다.
+
+• Ran Get-Content -Raw -Path .\.gitignore
+  └ # =============================================
+    # ?꿰떬訝뗥굇 ???ㅽ겕由쏀듃+?ㅼ젙 ?꾩슜 .gitignore
+    … +43 lines (ctrl + t to view transcript)
+    !Assets/_Project/Scripts/*/
+    !Assets/_Project/Scripts/*/States/
+
+• Ran git status --short
+  └  M Assets/_Project/Scripts/Player/PlayerInputHandler.cs
+     M Assets/_Project/Scripts/Player/PlayerStateMachine.cs
+    … +71 lines (ctrl + t to view transcript)
+    ?? Assets/_Project/Scripts/UI/UpgradeCardUI.cs.meta
+    ?? Assets/_Project/Scripts/Utils.meta
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 지금 .gitignore가 너무 보수적으로 잡혀 있어서 ScriptableObject 에셋과 AGENTS.md가 기본적으로 추적되지 않습니다. 커밋
+  전에 이 둘을 추적 가능하게 열고, 그 다음 현재 작업 상태를 한 번에 커밋하겠습니다.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 이제 추적 대상이 열렸습니다. 현재 변경분을 스테이징하고, 커밋 메시지는 이번 안정화 작업에 맞춰 정리해서 남기겠습니다.
+
+• Ran git status --short
+  └  M .gitignore
+     M Assets/_Project/Scripts/Player/PlayerInputHandler.cs
+    … +73 lines (ctrl + t to view transcript)
+    ?? Assets/_Project/Scripts/UI/UpgradeCardUI.cs.meta
+    ?? Assets/_Project/Scripts/Utils.meta
+
+• Ran git add .gitignore AGENTS.md a.md DEVLOG.md README.md Assets/_Project Assets/PlayerControls.inputactions
+  │ ProjectSettings
+  └ warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+    warning: in the working copy of 'Assets/_Project/Scripts/Player/PlayerInputHandler.cs', LF will be replaced by CRLF
+    … +76 lines (ctrl + t to view transcript)
+    warning: in the working copy of 'Assets/_Project/Scripts/Utils.meta', LF will be replaced by CRLF the next time Git
+    touches it
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 스테이징 재실행이 필요합니다. 방금 상태 조회가 병렬로 돌아서 스테이징 전 상태를 같이 보여준 것으로 보입니다. 다시 스테
+  이징하고 바로 커밋하겠습니다.
+
+• Ran git add .
+  └ fatal: Unable to create 'D:/200_Creative/210_GameDev/211_Study_Exercises/_unity/SLXS_EP01/.git/index.lock': File
+    exists.
+    … +4 lines (ctrl + t to view transcript)
+    may have crashed in this repository earlier:
+    remove the file manually to continue.
+
+• Ran git status --short
+  └ M  .gitignore
+    A  AGENTS.md
+    … +84 lines (ctrl + t to view transcript)
+    M  README.md
+    M  a.md
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 이전 Git 프로세스가 남긴 index.lock만 치우면 됩니다. 그 다음 바로 커밋하겠습니다.
+
+• Ran Remove-Item -LiteralPath .\.git\index.lock
+  └ Remove-Item : Cannot find path '.\.git\index.lock' because it does not exist.
+    At line:2 char:1
+    … +3 lines (ctrl + t to view transcript)
+        + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.RemoveItemCommand
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 락 파일은 이미 정리된 상태입니다. 현재 스테이징은 되어 있으니 커밋만 진행하겠습니다.
+
+• Ran git commit -m "Stabilize player movement and combat prototype"
+  └ [main ce49436] Stabilize player movement and combat prototype
+     88 files changed, 652 insertions(+), 63 deletions(-)
+    … +76 lines (ctrl + t to view transcript)
+     create mode 100644 Assets/_Project/Scripts/UI/UpgradeCardUI.cs.meta
+     create mode 100644 Assets/_Project/Scripts/Utils.meta
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 커밋 완료했습니다.
+
+  - 커밋: ce49436
+  - 메시지: Stabilize player movement and combat prototype
+
+  그리고 질문하신 부분:
+
+  - 네, ScriptableObject 에셋은 Git에 올리는 게 맞습니다
+  - Unity에서는 .asset만이 아니라 .meta도 반드시 같이 커밋해야 합니다
+  - 안 그러면 GUID가 바뀌어서 Inspector 참조가 깨집니다
+
+  이번 커밋에도 포함했습니다.
+
+  - Assets/_Project/ScriptableObjs/*.asset
+  - 해당 .meta
+  - 관련 스크립트/문서/AGENTS.md
+
+  다음은 그대로 이어서
+
+  - Slash2 콤보 안정화
+  - 회피/공격 체감 미세조정
+  - 더미 적과 피격 테스트
+    순으로 가면 됩니다.
+
+
+› git push 도 해줘
+
+
+• 원격 저장소 설정을 확인하고 바로 push 시도하겠습니다. 원격이 없거나 인증/네트워크 제한이 걸리면 그 지점까지만 바로 확
+  인하겠습니다.
+
+• Ran git remote -v
+  └ origin    https://github.com/kimil61/slxs.git (fetch)
+    origin    https://github.com/kimil61/slxs.git (push)
+
+• Ran git branch --show-current
+  └ main
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 원격은 origin, 브랜치는 main입니다. 그대로 git push origin main 시도하겠습니다.
+  └ To https://github.com/kimil61/slxs.git
+       2a4fdc2..ce49436  main -> main
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+  이제 GitHub 쪽에도 현재 안정화 작업이 올라가 있습니다.
+
+
+› 좋아좋아, 오늘 고생했다야.너의 덕분에 삽질 덜하고 지금 3.5시간만에 많은걸 했다.
+  a.md기준으로 쭉 한번 훓어봐줄래? 한번 로드맵 기준으로 무얼무얼 어떻게 차근차근 해 나가야 할지 같이 이야기 해보자
+
+
+■ Conversation interrupted - tell the model what to do differently. Something went wrong? Hit `/feedback` to report the
+issue.
+
+To continue this session, run codex resume 019d84d1-b947-7802-b1e1-3a6fd86d1d15
+
+
+› 우리가 했던 작업을 DEVLOG.md에 작성해줄래? 그리고 a.md기준으로 devlog.md를 전체적으로 바꿔야 할것 같은데그지? 기존에
+  devlog.md에 기록은 밀어버리고
+
+
+• DEVLOG.md를 지금까지 실제 작업 기준으로 다시 쓰겠습니다. 요청하신 대로 기존 기록은 밀고, a.md를 기준선으로 삼되 현재
+  우리가 실제로 끝낸 범위와 남은 작업이 드러나게 정리하겠습니다.
+
+• Running [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\a.md
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\DEVLOG.md
+  └ # 色狼下山 — 개발 진행 로그
+
+    … +172 lines (ctrl + t to view transcript)
+    - [ ] 애니메이션 이벤트로 Invoke 타이밍 교체 (현재 하드코딩된 duration)
+    - [ ] 카메라 락온 모드 (전투 시스템 때)
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\a.md
+  └ # 色狼下山 — 기술 아키텍처 & 로드맵 v2
+
+    … +684 lines (ctrl + t to view transcript)
+    |2025-04|DodgeData SO 분리 (Gemini 피드백)    |i-frame 0.01초 단위 튜닝, 난이도 핵심 변수     |
+    |2025-04|Sound Layering 3레이어 (Gemini 피드백)|whoosh→impact→resonance 합성으로 타격감 강화|
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 기존 DEVLOG.md는 예전 프로토타입 로그와 지금 실제 상태가 섞여 있어서 기준 문서 역할을 못 하고 있습니다. 전체를 갈아엎
+  고, a.md 기준 로드맵에 현재 실작업 진척을 붙인 형태로 다시 쓰겠습니다.
+
+• Added DEVLOG.md (+241 -0)
+      1 +# 色狼下山 — 개발 진행 로그
+      2 +
+      3 +> 이 문서는 `a.md`를 기준선으로 삼아, 실제로 Unity에서 확인된 구현 상태와 다음 작업 우선순위를 기록한다.
+      4 +> 설계 의도는 `a.md`, 현재 구현 현실은 `DEVLOG.md`를 본다.
+      5 +
+      6 +---
+      7 +
+      8 +## 현재 상태 요약
+      9 +- **기준 문서**: `a.md`
+     10 +- **현재 페이즈**: `Phase 1` 완료 직전 + `Phase 2` 초입
+     11 +- **현재 씬 기준**: `Assets/Scenes/SampleScene.unity`
+     12 +- **코드 기준선**: `Assets/_Project/Scripts/`
+     13 +- **튜닝 에셋 기준선**: `Assets/_Project/ScriptableObjs/`
+     14 +- **엔진/패키지**: Unity 6000 LTS / URP / New Input System / AI Navigation
+     15 +
+     16 +## 이번 세션에서 실제로 끝난 것
+     17 +- `Assets/_Project/Scripts` 아키텍처 기준으로 플레이어 시스템을 다시 연결했다.
+     18 +- `PlayerStateMachine` 기반 이동, 회전, 카메라 추적을 실제 씬에서 동작시켰다.
+     19 +- `AttackData`, `DodgeData`, `StaminaData`, `CombatTuningData` ScriptableObject 에셋을 만들고 Inspector에 연결
+         했다.
+     20 +- `PlayerAnimator.controller`를 직접 구성해서 `Idle`, `Locomotion`, `Slash1`, `HeavyAttack`, `Dodge`를 실제 재
+         생되게 만들었다.
+     21 +- 약공격은 좌클릭, 강공격은 `Shift + 좌클릭`, 회피는 `Space`로 동작하도록 입력 계층을 정리했다.
+     22 +- 구르기 속도와 `DodgeData`를 엘든링 롤 감각에 맞춰 1차 튜닝했다.
+     23 +- 현재 체감 기준으로 `이동 / 회피 / 약공격 1타 / 강공격`은 플레이 가능한 상태다.
+     24 +- Git 커밋 및 원격 push 완료: `ce49436`
+     25 +
+     26 +## 아직 남아 있는 것
+     27 +- `Slash1 -> Slash2` 콤보 연계가 완전히 안정적이지 않다.
+     28 +- 구르기 속도 곡선과 회복 구간은 추가 미세 조정이 필요하다.
+     29 +- 히트박스/적 피격/히트스톱/넉백/사운드 레이어링은 아직 실전 검증 전이다.
+     30 +- `SampleScene`는 여전히 임시 테스트 씬이다. 최종 `Boot / MainMenu / GamePlay / Hub` 씬 구조는 미구성이다.
+     31 +
+     32 +---
+     33 +
+     34 +## 폴더 기준선
+     35 +
+     36 +### 사용 중인 코드
+     37 +- `Assets/_Project/Scripts/Core`
+     38 +- `Assets/_Project/Scripts/Camera`
+     39 +- `Assets/_Project/Scripts/Combat`
+     40 +- `Assets/_Project/Scripts/Player`
+     41 +- `Assets/_Project/Scripts/Enemy`
+     42 +- `Assets/_Project/Scripts/Level`
+     43 +- `Assets/_Project/Scripts/UI`
+     44 +- `Assets/_Project/Scripts/Utils`
+     45 +
+     46 +### 사용 중인 튜닝 에셋
+     47 +- `Assets/_Project/ScriptableObjs/`
+     48 +  - `slash1AttackData.asset`
+     49 +  - `slash2AttackData.asset`
+     50 +  - `heavyAttackData.asset`
+     51 +  - `DodgeData.asset`
+     52 +  - `StaminaData.asset`
+     53 +  - `CombatTuningData.asset`
+     54 +
+     55 +### 주의
+     56 +- 앞으로도 새 코드는 `Assets/_Project/Scripts` 기준으로 유지한다.
+     57 +- `Assets/Scripts`를 다시 주력 코드 위치로 쓰지 않는다.
+     58 +- Unity 참조가 중요하므로 `.asset`와 `.meta`는 항상 같이 커밋한다.
+     59 +
+     60 +---
+     61 +
+     62 +## 시스템별 현황
+     63 +
+     64 +### 1. Player Movement / Camera
+     65 +**상태**: 플레이 가능
+     66 +
+     67 +완료:
+     68 +- WASD 이동
+     69 +- 카메라 기준 방향 이동
+     70 +- 이동 방향 회전
+     71 +- Idle / Running 애니메이션
+     72 +- Third Person Camera 추적
+     73 +
+     74 +비고:
+     75 +- `PlayerStateMachine` 기반으로 실제 동작 확인 완료
+     76 +- `CharacterController.isGrounded` 기준으로 접지 판정 수정
+     77 +
+     78 +남은 것:
+     79 +- `Locomotion`을 추후 `MoveX / MoveZ` 기반 2D Blend Tree로 확장
+     80 +- 점프는 현재 미구현
+     81 +- 낙하/착지 연출은 아직 다듬지 않음
+     82 +
+     83 +### 2. Dodge / Stamina
+     84 +**상태**: 동작함, 1차 튜닝 완료
+     85 +
+     86 +완료:
+     87 +- `Space` 입력으로 회피 동작
+     88 +- `DodgeData` 기반 `iFrameStart`, `iFrameDuration`, `totalDuration`, `recoveryTime`, `distance`, `speedCurve`
+         튜닝 가능
+     89 +- 엘든링 롤 기준으로 1차 속도 세팅
+     90 +
+     91 +현재 참고값:
+     92 +- `Roll.anim` 원본 길이: 약 `2.367초`
+     93 +- Animator `Dodge` 상태 속도는 엘든링 전체 롤 길이 기준으로 빠르게 조정
+     94 +- `DodgeData.totalDuration`과 `recoveryTime`을 별도로 관리
+     95 +
+     96 +남은 것:
+     97 +- 시작 가속 / 후반 감속을 더 자연스럽게 다듬기
+     98 +- 회피 거리와 무적 시간 밸런스 조정
+     99 +- 적 공격과 맞물렸을 때 체감 검증
+    100 +
+    101 +### 3. Light Attack / Heavy Attack
+    102 +**상태**: 1타 약공격 + 강공격 동작
+    103 +
+    104 +완료:
+    105 +- 좌클릭 약공격
+    106 +- `Shift + 좌클릭` 강공격
+    107 +- `AttackData` 기반 애니메이션/타이밍 연결
+    108 +- `Slash1`, `HeavyAttack` 상태 재생 확인
+    109 +
+    110 +남은 것:
+    111 +- `Slash1 -> Slash2` 콤보 안정화
+    112 +- 이후 `Slash3` 확장 여부 판단
+    113 +- 히트박스 실제 적중 테스트
+    114 +
+    115 +### 4. Hitbox / Damage / Feedback
+    116 +**상태**: 코드만 준비, 실제 검증 전
+    117 +
+    118 +코드상 준비된 것:
+    119 +- `WeaponHitbox`
+    120 +- `IDamageable`
+    121 +- `HitFeedback`
+    122 +- `CameraShake`
+    123 +- `CombatSoundPlayer`
+    124 +
+    125 +남은 것:
+    126 +- 무기 오브젝트 Collider와 `WeaponHitbox` 실제 연결 검증
+    127 +- 더미 적 또는 캡슐 적 배치
+    128 +- 히트스톱 / 넉백 / 셰이크 / 사운드 레이어링 체감 확인
+    129 +
+    130 +### 5. Enemy AI
+    131 +**상태**: 아키텍처 코드만 존재, 씬 실장 전
+    132 +
+    133 +준비된 코드:
+    134 +- `EnemyStateMachine`
+    135 +- `EnemyHealth`
+    136 +- `EnemyData`
+    137 +- `Idle / Patrol / Chase / Attack / Stagger / Death`
+    138 +
+    139 +남은 것:
+    140 +- 테스트용 적 프리팹
+    141 +- NavMesh Bake
+    142 +- 플레이어 감지 및 전투 연결
+    143 +- 적 공격용 `AttackData` 에셋 생성
+    144 +
+    145 +### 6. Level / Run Loop / UI
+    146 +**상태**: 대부분 뼈대만 있음
+    147 +
+    148 +준비된 코드:
+    149 +- `RunManager`
+    150 +- `ArenaManager`
+    151 +- `EnemySpawner`
+    152 +- `AreaData`
+    153 +- UI 관련 스크립트 다수
+    154 +
+    155 +남은 것:
+    156 +- 실제 씬에 배치 및 연결
+    157 +- 전투 구역 / 보상 / 결산 루프 연결
+    158 +- HUD / 보스 HP / 사망 화면 시각 구현
+    159 +
+    160 +---
+    161 +
+    162 +## a.md 기준 체크
+    163 +
+    164 +### Phase 0: 환경 세팅
+    165 +- [x] Unity 프로젝트 생성 (URP)
+    166 +- [x] Input System / URP / AI Navigation 포함 기본 패키지 상태 확인
+    167 +- [x] Git 저장소 및 원격 push
+    168 +- [x] 아키텍처 폴더 구조 생성
+    169 +- [ ] Boot / MainMenu / Gameplay 씬 플로우 분리
+    170 +- [ ] Daz 캐릭터 1개 임포트 정식 테스트
+    171 +
+    172 +### Phase 1: 3인칭 코어 무브먼트
+    173 +- [x] WASD 입력
+    174 +- [x] 카메라 기준 방향 이동
+    175 +- [x] 캐릭터 회전
+    176 +- [x] 걷기 / 달리기 애니메이션
+    177 +- [x] 구르기 동작
+    178 +- [x] 스태미나 연결
+    179 +- [x] DodgeData 기반 튜닝 구조
+    180 +- [ ] 점프 / 낙하 / 착지 정리
+    181 +- [ ] Locomotion 2D Blend Tree 정리
+    182 +
+    183 +### Phase 2: 전투 MVP
+    184 +- [x] AttackData / DodgeData / StaminaData / CombatTuningData 생성
+    185 +- [x] 약공격 1타 동작
+    186 +- [x] 강공격 동작
+    187 +- [x] ScriptableObject 기반 튜닝 구조 확립
+    188 +- [ ] 경공격 2타 콤보 안정화
+    189 +- [ ] 히트박스 실제 적중 검증
+    190 +- [ ] 적 데미지 시스템 연결
+    191 +- [ ] 히트스톱 / 넉백 / 셰이크 체감 검증
+    192 +- [ ] 사운드 레이어링 연결 검증
+    193 +
+    194 +### Phase 3: Enemy AI
+    195 +- [ ] 테스트 적 프리팹
+    196 +- [ ] NavMesh Bake
+    197 +- [ ] 플레이어 추적
+    198 +- [ ] 적 공격 연결
+    199 +- [ ] 적 사망 / 드롭
+    200 +
+    201 +### Phase 4 이후
+    202 +- 아직 본격 착수 전
+    203 +
+    204 +---
+    205 +
+    206 +## 다음 우선순위
+    207 +
+    208 +### 바로 다음
+    209 +1. `Slash1 -> Slash2` 콤보 안정화
+    210 +2. 테스트용 적 1종 배치
+    211 +3. 무기 히트박스와 적 피격 확인
+    212 +4. 히트스톱 / 넉백 / 카메라 셰이크 / 사운드 체감 조정
+    213 +
+    214 +### 그 다음
+    215 +1. NavMesh Bake
+    216 +2. 적 FSM 실제 구동
+    217 +3. 사망 / 결산 / HUD 최소 연결
+    218 +4. `GamePlay` 씬 분리
+    219 +
+    220 +### 아직 건드리지 말 것
+    221 +- 록온 시스템
+    222 +- 여캐/NPC 시스템
+    223 +- Hub / Meta Progression 대규모 확장
+    224 +- 성인 연출용 별도 씬
+    225 +
+    226 +---
+    227 +
+    228 +## 현재 운영 원칙
+    229 +- 설계는 `a.md`, 현실 구현은 `DEVLOG.md`
+    230 +- 시스템은 코드보다 `ScriptableObject` 튜닝 우선
+    231 +- 플레이어 감각은 먼저 `회피 / 약공격 / 강공격 / 카메라`를 안정화
+    232 +- 적, UI, 로그라이트 루프는 그 다음
+    233 +- `SampleScene`은 계속 테스트 씬으로 써도 되지만, 일정 시점에 `GamePlay` 씬으로 분리 필요
+    234 +
+    235 +---
+    236 +
+    237 +## 메모
+    238 +- 현재 Animator 파라미터 이름 오타 하나로도 바로 동작이 깨진다.
+    239 +- `HeavyAttack`처럼 코드와 Animator 파라미터 이름을 반드시 정확히 맞춘다.
+    240 +- 회피 애니메이션 길이와 `DodgeData.totalDuration`은 반드시 분리해서 생각한다.
+    241 +- 게임 체감은 코드보다 `AttackData`, `DodgeData`, `CombatTuningData` 값이 훨씬 크게 좌우한다.
+
+✘ Failed to apply patch
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 파일 삭제 패치가 실패해서 내용 전체 교체 방식으로 다시 넣겠습니다. DEVLOG.md 전체를 새 기준으로 덮어씁니다.
+
+• DEVLOG.md가 인코딩/내용 차이 때문에 부분 대체가 계속 안 맞습니다. 파일 자체를 삭제 후 재생성하는 방식으로 한 번 더 정
+  리하겠습니다.
+
+• Deleted DEVLOG.md (+0 -176)
+      1 -﻿# 色狼下山 — 개발 진행 로그
+      2 -
+      3 -> 매 Day 끝에 업데이트. 새 채팅 시작할 때 이 파일을 프로젝트에 올려두면 맥락 유지됨.
+      4 -
+      5 ----
+      6 -
+      7 -## 현재 상태 요약
+      8 -- **Phase**: Phase 2 (전투 MVP) 진입 — 아키텍처 코드 생성 완료
+      9 -- **에피소드**: EP02 (전투 프로토타입 — 약공격/강공격/구르기)
+     10 -- **Unity**: 6000 LTS / URP
+     11 -- **Input**: New Input System (PlayerControls.inputactions)
+     12 -- **신규 스크립트**: 38개 (Core/Combat/Player/Enemy) — `Assets/_Project/Scripts/` 하위
+     13 -
+     14 ----
+     15 -
+     16 -## 완료된 스크립트 목록
+     17 -
+     18 -### 프로토타입 (Assets/Scripts/) — EP01~EP02
+     19 -
+     20 -| 스크립트 | 역할 | 상태 |
+     21 -|---------|------|------|
+     22 -| PlayerControls.cs | Input Actions 자동생성 (Gameplay 맵) | ✅ 완료 |
+     23 -| PlayerInputHandler.cs | 입력 수집 (Move/Look/Jump/Interact) | ✅ 완료 |
+     24 -| PlayerMovement.cs | WASD 이동 + 카메라 기준 회전 + 중력 + 전투 이동잠금 | ✅ 완료 (v2 - LockMovement 추가) |
+     25 -| ThirdPersonCamera.cs | 마우스 오빗 카메라 + 벽 충돌 줌인 | ✅ 완료 (v2 - Lerp 제거) |
+     26 -| CursorManager.cs | ESC 커서 잠금/해제 토글 | ✅ 완료 |
+     27 -| IInteractable.cs | 상호작용 인터페이스 | ✅ 완료 |
+     28 -| InteractionSystem.cs | 뷰포트 레이캐스트 + 포커스 관리 | ✅ 완료 |
+     29 -| SampleInteractable.cs | 하이라이트 테스트용 | ✅ 완료 |
+     30 -| PlayerCombat.cs | 약공격/강공격(홀드)/구르기 + 이동잠금 연동 | ✅ 완료 |
+     31 -
+     32 -### 아키텍처 코드 (Assets/_Project/Scripts/) — Day 4 신규 생성
+     33 -
+     34 -#### Core (6개)
+     35 -| 스크립트 | 역할 | 상태 |
+     36 -|---------|------|------|
+     37 -| EventBus.cs | 전역 이벤트 버스 (Subscribe/Publish) + 게임 이벤트 정의 | ✅ 완료 |
+     38 -| GameState.cs | 게임 상태 enum (Boot/MainMenu/Hub/Run/Paused/GameOver) | ✅ 완료 |
+     39 -| GameManager.cs | Singleton, 상태 전환, 런 관리, 일시정지 | ✅ 완료 |
+     40 -| SceneLoader.cs | 비동기 씬 전환 유틸리티 | ✅ 완료 |
+     41 -| SaveSystem.cs | JSON 영구 저장 (통화, 업그레이드 해금) | ✅ 완료 |
+     42 -| ObjectPool.cs | 범용 오브젝트 풀 + PoolManager Singleton | ✅ 완료 |
+     43 -
+     44 -#### Combat (9개)
+     45 -| 스크립트 | 역할 | 상태 |
+     46 -|---------|------|------|
+     47 -| AttackData.cs | 공격별 SO (데미지/히트스톱/셰이크/넉백/콤보/3레이어SFX) | ✅ 완료 |
+     48 -| DodgeData.cs | 구르기 SO (i-frame/거리/속도곡선/캔슬) | ✅ 완료 |
+     49 -| StaminaData.cs | 스태미나 SO (최대치/소모/회복/고갈페널티) | ✅ 완료 |
+     50 -| CombatTuningData.cs | 전역 전투 기본값 SO | ✅ 완료 |
+     51 -| IDamageable.cs | 데미지 인터페이스 (플레이어/적 공용) | ✅ 완료 |
+     52 -| WeaponHitbox.cs | 무기 Collider ON/OFF + 중복히트 방지 | ✅ 완료 |
+     53 -| HitFeedback.cs | 히트스톱 + 이펙트 + impact/resonance 사운드 | ✅ 완료 |
+     54 -| CameraShake.cs | 카메라 위치 오프셋 셰이크 | ✅ 완료 |
+     55 -| CombatSoundPlayer.cs | Sound Layering 1층 (whoosh) | ✅ 완료 |
+     56 -
+     57 -#### Player (13개)
+     58 -| 스크립트 | 역할 | 상태 |
+     59 -|---------|------|------|
+     60 -| IPlayerState.cs | 플레이어 상태 인터페이스 | ✅ 완료 |
+     61 -| PlayerStateMachine.cs | 상태 전환 + 컴포넌트 허브 + 이동/회전 유틸 | ✅ 완료 |
+     62 -| PlayerHealth.cs | IDamageable, HP, 무적 체크, 넉백→Hit, 사망→Death | ✅ 완료 |
+     63 -| PlayerStamina.cs | 스태미나 소모/회복/딜레이/고갈 페널티 | ✅ 완료 |
+     64 -| PlayerAnimator.cs | MoveX/MoveZ/Speed/isGrounded 동기화 | ✅ 완료 |
+     65 -| PlayerIdleState.cs | 대기 → Move/Attack/Dodge/Fall 전환 | ✅ 완료 |
+     66 -| PlayerMoveState.cs | 걷기/달리기/스프린트 통합 | ✅ 완료 |
+     67 -| PlayerDodgeState.cs | i-frame + 속도곡선 + 캔슬윈도우 | ✅ 완료 |
+     68 -| PlayerLightAttackState.cs | 3타 콤보 + 히트박스 타이밍 + 선입력 | ✅ 완료 |
+     69 -| PlayerHeavyAttackState.cs | 강공격 + 스태미나 소모 | ✅ 완료 |
+     70 -| PlayerHitState.cs | 경직 + 넉백 감쇠 | ✅ 완료 |
+     71 -| PlayerDeathState.cs | 사망 + PlayerDiedEvent | ✅ 완료 |
+     72 -| PlayerFallState.cs | 낙하 + 공중 방향 제어 | ✅ 완료 |
+     73 -
+     74 -#### Enemy (10개)
+     75 -| 스크립트 | 역할 | 상태 |
+     76 -|---------|------|------|
+     77 -| EnemyData.cs | 적 SO (스탯/감지/공격패턴/드롭) | ✅ 완료 |
+     78 -| IEnemyState.cs | 적 상태 인터페이스 | ✅ 완료 |
+     79 -| EnemyStateMachine.cs | NavMeshAgent + FSM + OverlapSphere 감지 | ✅ 완료 |
+     80 -| EnemyHealth.cs | IDamageable, 피격→Stagger, 사망→Death | ✅ 완료 |
+     81 -| EnemyIdleState.cs | 대기, 감지→Chase, 웨이포인트→Patrol | ✅ 완료 |
+     82 -| EnemyPatrolState.cs | 웨이포인트 순회 | ✅ 완료 |
+     83 -| EnemyChaseState.cs | NavMesh 추격, 범위 진입→Attack | ✅ 완료 |
+     84 -| EnemyAttackState.cs | AttackData SO 재사용, 히트박스 타이밍 | ✅ 완료 |
+     85 -| EnemyStaggerState.cs | 경직 + 넉백(NavMesh) | ✅ 완료 |
+     86 -| EnemyDeathState.cs | 사망 + 드롭 + EnemyDiedEvent | ✅ 완료 |
+     87 -
+     88 ----
+     89 -
+     90 -## Day 1 (3/29) — 프로젝트 세팅 + 이동 + 카메라
+     91 -
+     92 -### 완료
+     93 -- URP 프로젝트 생성
+     94 -- New Input System 세팅 (Gameplay 맵: Move/Look/Jump/Interact)
+     95 -- WASD 이동 (CharacterController 기반, 카메라 방향 기준)
+     96 -- 3인칭 오빗 카메라 (직접 구현, Cinemachine 미사용)
+     97 -- 벽 충돌 시 카메라 자동 줌인
+     98 -- 카메라 이중보간 버그 수정 (Lerp+Slerp → 즉시배치+LookAt)
+     99 -
+    100 -### 결정 사항
+    101 -- 카메라: 직접 구현 (Cinemachine 미사용) → 커스텀 자유도 확보
+    102 -- 입력: New Input System only
+    103 -- 물리: CharacterController (Rigidbody 아님)
+    104 -- sensitivity 기본값 2f (Inspector에서 조절 가능)
+    105 -
+    106 ----
+    107 -
+    108 -## Day 2 (3/30) — 인터랙션 시스템 + 커서 관리 (진행중 미완료)
+    109 -
+    110 -### 미완료
+    111 -- CursorManager.cs (ESC 커서 잠금 토글)
+    112 -- IInteractable.cs (인터페이스)
+    113 -- InteractionSystem.cs (뷰포트 레이캐스트 + 포커스 관리)
+    114 -- SampleInteractable.cs (하이라이트 테스트)
+    115 -- PlayerMovement.cs에서 커서 잠금 로직 제거 (CursorManager로 이관)
+    116 -
+    117 ----
+    118 -
+    119 -## Day 3 (4/2) — EP02 전투 프로토타입 시작
+    120 -
+    121 -### 완료
+    122 -- Mixamo 캐릭터 + 애니메이션 임포트 (Idle/Run/Slash1/Slash2/HeavyAtk/Roll)
+    123 -- Animator Controller 세팅 (Speed, Attack, HeavyAttack, Roll 파라미터)
+    124 -- PlayerCombat.cs 신규 작성 (New Input System 기반)
+    125 -  - 좌클릭 탭 → 약공격 (Trigger: Attack)
+    126 -  - 좌클릭 홀드(0.4초+) → 강공격 (Trigger: HeavyAttack)
+    127 -  - 스페이스 → 구르기 (Trigger: Roll)
+    128 -  - 전투 중 이동잠금 (PlayerMovement.LockMovement 연동)
+    129 -  - 커서 풀려있으면 전투 입력 무시 (CursorManager 연동)
+    130 -- PlayerMovement.cs 수정 — LockMovement()/UnlockMovement() 추가
+    131 -- PlayerController.cs 삭제 (EP02 가이드 스크립트, 구버전 Input 사용 + PlayerMovement와 중복)
+    132 -
+    133 -### 이슈 해결
+    134 -- EP02 가이드 스크립트가 구버전 Input 클래스 사용 → New Input System으로 전환 (Mouse.current / Keyboard.current
+         )
+    135 -- PlayerController.cs가 Rigidbody 기반이라 기존 CharacterController 아키텍처와 충돌 → 삭제, PlayerMovement에 통
+         합
+    136 -
+    137 -### 알려진 이슈
+    138 -- 좌클릭이 Interact(EP01)와 Attack(EP02) 양쪽에 바인딩됨 → 전투 테스트 시 InteractionSystem 비활성화 필요. 추후
+          게임 상태 머신으로 분리 예정.
+    139 -
+    140 -### 다음
+    141 -- Animator 트랜지션 타이밍 미세 조정
+    142 -- 칼 오브젝트 + Collider (타격 판정)
+    143 -- 적 캡슐 + 데미지 시스템
+    144 -- 히트스탑 + 카메라 쉐이크
+    145 -
+    146 ----
+    147 -
+    148 -## Day 4 (4/9) — 아키텍처 코드 일괄 생성
+    149 -
+    150 -### 완료
+    151 -- `Assets/_Project/Scripts/` 폴더 구조 생성 (Core/Combat/Player/Enemy + 기타)
+    152 -- **Core 6개**: EventBus, GameState, GameManager, SceneLoader, SaveSystem, ObjectPool(+PoolManager)
+    153 -- **Combat SO 4개**: AttackData, DodgeData, StaminaData, CombatTuningData (CreateAssetMenu: 색랑하산/Combat/)
+    154 -- **Combat 시스템 5개**: IDamageable, WeaponHitbox, HitFeedback(+Runner), CameraShake, CombatSoundPlayer
+    155 -- **Player SM 10개**: IPlayerState, PlayerStateMachine + 8개 States (Idle/Move/Dodge/LightAttack/HeavyAttack/Hi
+         t/Death/Fall)
+    156 -- **Player 3개**: PlayerHealth(IDamageable), PlayerStamina(SO기반), PlayerAnimator(해시 최적화)
+    157 -- **Enemy 10개**: EnemyData SO, IEnemyState, EnemyStateMachine(NavMesh+Gizmos), EnemyHealth + 6개 States (Idle/
+         Patrol/Chase/Attack/Stagger/Death)
+    158 -
+    159 -### 핵심 설계
+    160 -- 플레이어/적 모두 **AttackData SO 공유** → 코드 한 벌로 양쪽 전투 처리
+    166 -- 기존 프로토타입 코드(Assets/Scripts/) → 새 구조로 마이그레이션
+    167 -- UI 시스템 (HUD, HP바, 스태미나바)
+    168 -- Level 시스템 (Arena, Spawner)
+    169 -
+    170 ----
+    171 -
+    172 -## 기술 부채 / 나중에 할 것
+    173 -- [ ] 좌클릭 입력 충돌 해소 (Interact vs Attack → 게임 상태 머신)
+    174 -- [ ] Daz3D 캐릭터로 Capsule 교체 (EP06)
+    175 -- [ ] 애니메이션 이벤트로 Invoke 타이밍 교체 (현재 하드코딩된 duration)
+    176 -- [ ] 카메라 락온 모드 (전투 시스템 때)
+
+✘ Failed to apply patch
+
+─ Worked for 1m 49s ────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• apply_patch가 이 파일에서 계속 실패해서, 이번 한 번은 전체 덮어쓰기 방식으로 정리하겠습니다. 내용은 이미 확정됐고,
+  DEVLOG.md를 새 기준 문서로 통째로 교체합니다.
+
+• Ran @'
+  │ # 色狼下山 — 개발 진행 로그
+  │
+  │ … +242 lines
+  └ (no output)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• DEVLOG.md 전면 교체했습니다.
+
+  - 기존 DEVLOG.md는 예전 프로토타입 로그와 현재 실제 상태가 섞여 있어서 기준 문서로 쓰기 어려웠고
+  - 지금은 a.md를 기준선으로 두되, 실제 구현 진척과 다음 우선순위가 바로 보이게 다시 정리했습니다
+
+  핵심 반영 내용:
+
+  - Assets/_Project/Scripts와 Assets/_Project/ScriptableObjs를 현재 기준선으로 명시
+  - 지금까지 실제로 끝난 작업 정리
+  - 더 이상 유효하지 않은 옛 일자별 기록은 제거
+
+  즉 지금부터는:
+
+  - 설계 의도는 a.md
+  - 실제 진행 현황은 DEVLOG.md
+    이렇게 보면 됩니다.
+
+  원하면 다음으로
+
+  1. 이 DEVLOG.md도 커밋
+  2. README.md도 지금 상태에 맞게 얇게 정리
+  3. 그리고 a.md 기준 로드맵을 같이 쭉 리뷰
+     이 순서로 이어가겠습니다.
+
+
+› 좋아 . 커밋은 나중에 하고 2,3 진행시켜
+
+
+• README.md를 현재 상태에 맞게 가볍게 정리하고, 이어서 a.md 로드맵 기준으로 다음 작업 순서를 압축해서 정리하겠습니다. 먼
+  저 현재 README.md를 기준으로 어떤 수준까지 줄일지 확인하겠습니다.
+
+• Running [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\README.md
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\README.md
+  └ # 色狼下山 (Saek-Nang-Ha-San)
+
+    … +25 lines (ctrl + t to view transcript)
+    - [ ] EP07: NPC 미션
+    - [ ] EP09: 탈것
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\DEVLOG.md
+  └ # 色狼下山 — 개발 진행 로그
+
+    … +238 lines (ctrl + t to view transcript)
+    - 게임 체감은 코드보다 `AttackData`, `DodgeData`, `CombatTuningData` 값이 훨씬 크게 좌우한다.
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• README.md는 현재 상태에 비해 너무 낡아서, 입문용 문서 역할만 하도록 얇게 다시 맞추겠습니다. 내용은 DEVLOG.md와 충돌하
+  지 않게 유지하겠습니다.
+
+• Deleted README.md (+0 -29)
+     1 -﻿# 色狼下山 (Saek-Nang-Ha-San)
+     2 -
+     3 -무협풍 3D 액션 게임 — Unity 6000 LTS / URP / C#
+     4 -
+     5 -## 구조
+     6 -```
+     7 -├── Assets/
+     8 -│   ├── Scripts/          # 모든 C# 스크립트
+    14 -
+    15 -## 개발 환경
+    16 -- Unity 6000 LTS (URP)
+    17 -- New Input System
+    18 -- CharacterController 기반 이동
+    19 -
+    20 -## 에피소드 진행
+    21 -- [x] EP01: WASD + 3인칭 카메라 + 클릭 인터랙션
+    22 -- [ ] EP02: 클릭 Interaction(RayCast + Hightlight) , ESC Cursor 해제 / 잠금 토글
+    23 -- [ ] EP03: 점프 + 장애물
+    24 -- [ ] EP04: 무기 공격
+    25 -- [ ] EP05: 몬스터 + 아이템 드랍
+    26 -- [ ] EP06: 환경 구성
+    27 -- [ ] EP07: Daz 여캐 추가
+    28 -- [ ] EP07: NPC 미션
+    29 -- [ ] EP09: 탈것
+
+✘ Failed to apply patch
+
+• Ran @'
+  │ # 色狼下山 (Saek-Nang-Ha-San)
+  │
+  │ … +43 lines
+  └ (no output)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• DEVLOG.md는 전면 재작성했고, README.md도 지금 상태에 맞게 얇게 정리했습니다. 이제 문서 역할이 이렇게 분리됩니다.
+
+  - a.md: 설계 원본
+  - DEVLOG.md: 실제 구현 상태와 다음 작업
+  - README.md: 프로젝트 입문용 요약
+
+  로드맵 기준으로 지금 가장 맞는 순서는 이렇습니다.
+
+  1. Phase 2를 먼저 닫아야 합니다.
+
+  - Slash1 -> Slash2 콤보 안정화
+  - 테스트 적 1종 배치
+  - 히트박스 적중 확인
+  - 피격, 넉백, 히트스톱, 카메라 셰이크, 사운드 레이어링 체감 검증
+
+  2. 그 다음 Phase 3로 넘어갑니다.
+
+  - NavMesh Bake
+  - 적 추적/공격 FSM 실제 연결
+  - 적 사망/드롭 처리
+  3. 그 이후에야 Phase 4 로그라이트 루프를 붙이는 게 맞습니다.
+
+  - Arena 구역
+  - 보스
+  - 결산/복귀
+
+  지금은 절대 범위를 넓히면 안 됩니다. Hub, Meta Progression, 록온, 여캐/NPC, 성인 연출은 전부 뒤로 미루고, 먼저 “플레이
+  어 1명 + 적 1종 + 전투 체감”을 완성해야 합니다.
+
+  내 의견으로 다음 작업 1순위는 이것입니다.
+
+  - Slash2 콤보 안정화
+  - 적 더미 1개 배치
+  - 무기 히트박스와 적 피격 연결
+
+  이 3개가 끝나면 비로소 전투 MVP가 실제로 서기 시작합니다. 원하면 바로 다음 턴에 그 순서대로 Slash2 콤보 안정화 -> 테스
+  트 적 배치로 들어가겠습니다.
+
+
+› AGENTS.md도 업데이트 할수 있어?
+
+
+• 가능합니다. 지금 문서 기준이 바뀌었으니 AGENTS.md도 현재 상태에 맞게 같이 정리하겠습니다. 우선 기존 내용을 확인하고,
+  최근 합의된 기준선만 반영해서 갱신하겠습니다.
+
+• Running [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\AGENTS.md
+
+• Running [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\README.md
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\AGENTS.md
+  └ # Repository Guidelines
+
+    … +75 lines (ctrl + t to view transcript)
+    - `AGENTS.md` at the repository root is enough as the local project instruction file for future agent sessions.
+
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\DEVLOG.md
+  └ # 色狼下山 — 개발 진행 로그
+
+    … +238 lines (ctrl + t to view transcript)
+    - 게임 체감은 코드보다 `AttackData`, `DodgeData`, `CombatTuningData` 값이 훨씬 크게 좌우한다.
+
+
+• Ran [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Content -Raw -Encoding UTF8 -Path .\README.md
+  └ # 色狼下山 (Saek-Nang-Ha-San)
+
+    … +41 lines (ctrl + t to view transcript)
+    - Unity 자산은 `.meta`와 함께 관리한다.
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 가능합니다. 지금 AGENTS.md도 낡은 항목이 있어서, 최근 합의된 기준으로 바로 맞추겠습니다. 핵심은 컴파일 불가 같은 옛 상
+  태를 지우고, 현재 주력 폴더/문서/우선순위를 반영하는 것입니다.
+
+• Added AGENTS.md (+91 -0)
+     1 +# Repository Guidelines
+     2 +
+     3 +## Project Context
+     4 +- This repo is for the Unity game `色狼下山 (Saek-Nang-Ha-San)`.
+     5 +- `a.md` is the design source of truth for architecture, scope, and roadmap.
+     6 +- `DEVLOG.md` is the implementation reality log and current task tracker.
+     7 +- `README.md` is the lightweight onboarding overview.
+     8 +
+     9 +## Current State
+    10 +- The project is in late `Phase 1` / early `Phase 2` relative to `a.md`.
+    11 +- The active test scene is `Assets/Scenes/SampleScene.unity`.
+    12 +- The active code baseline is `Assets/_Project/Scripts/`.
+    13 +- The active gameplay tuning assets are in `Assets/_Project/ScriptableObjs/`.
+    14 +- Current playable features in-scene:
+    15 +  - WASD movement
+    16 +  - third-person camera follow
+    17 +  - idle / running animation
+    18 +  - dodge on `Space`
+    19 +  - light attack on left click
+    20 +  - heavy attack on `Shift + left click`
+    21 +
+    22 +## Source Of Truth
+    23 +- Follow `a.md` for intended design.
+    24 +- Follow `DEVLOG.md` for what is actually implemented now.
+    25 +- If design and implementation diverge, do not guess silently. Call out the mismatch and decide which document o
+        r system to update.
+    26 +
+    27 +## Active Layout
+    28 +- Main gameplay code:
+    29 +  - `Assets/_Project/Scripts/Core`
+    30 +  - `Assets/_Project/Scripts/Camera`
+    31 +  - `Assets/_Project/Scripts/Combat`
+    32 +  - `Assets/_Project/Scripts/Player`
+    33 +  - `Assets/_Project/Scripts/Enemy`
+    34 +  - `Assets/_Project/Scripts/Level`
+    35 +  - `Assets/_Project/Scripts/UI`
+    36 +  - `Assets/_Project/Scripts/Utils`
+    37 +- Main tuning assets:
+    38 +  - `Assets/_Project/ScriptableObjs/`
+    39 +- Do not treat `Assets/Scripts` as the primary gameplay code location.
+    40 +
+    41 +## Current Technical Notes
+    42 +- The current C# project compiles.
+    43 +- Player control is now driven by `PlayerStateMachine`, not by the old prototype scripts.
+    44 +- Gameplay feel is intentionally data-driven through `AttackData`, `DodgeData`, `StaminaData`, and `CombatTuning
+        Data`.
+    45 +- `SampleScene.unity` is still a working testbed, not a final production scene layout.
+    46 +
+    47 +## Working Rules
+    48 +- Prefer extending and fixing `Assets/_Project/Scripts/` instead of creating parallel duplicate systems.
+    49 +- Preserve the architecture direction from `a.md`: stable core, gameplay tuned through ScriptableObjects where p
+        ractical.
+    50 +- Before replacing generated code, verify whether the issue is scene wiring, serialized references, tuning data,
+         Animator setup, or an actual code defect.
+    51 +- Keep code comments short and useful.
+    52 +- When tuning combat or dodge feel, prefer adjusting ScriptableObject values before rewriting logic.
+    53 +
+    54 +## Unity Workflow Expectations
+    55 +- Many tasks in this repo require both code work and Unity Editor work.
+    56 +- Code-side tasks:
+    57 +  - state machine logic
+    58 +  - combat logic
+    59 +  - input cleanup
+    60 +  - bug fixing
+    61 +  - AI / level / UI integration
+    62 +- Editor-side tasks:
+    63 +  - Animator states and transitions
+    64 +  - assigning ScriptableObject references
+    65 +  - prefab setup
+    66 +  - collider and hitbox setup
+    67 +  - NavMesh baking
+    68 +  - validating animation timing and scene references
+    69 +- If a task cannot be completed from code alone, explicitly state what must be done in the Unity Editor.
+    70 +
+    71 +## Documentation Maintenance
+    72 +- Update `a.md` only when intended design changes.
+    73 +- Update `DEVLOG.md` when implementation status or priorities change.
+    74 +- Update `README.md` when onboarding information changes.
+    75 +- Keep project docs in UTF-8.
+    81 +
+    82 +## Recommended Immediate Priorities
+    83 +1. Stabilize `Slash1 -> Slash2` combo behavior.
+    84 +2. Add one test enemy and verify hitbox / damage / hit feedback.
+    85 +3. Validate hit stop, knockback, camera shake, and audio layering in actual combat.
+    86 +4. Move into NavMesh-based enemy integration.
+    87 +5. Split out a proper `GamePlay` scene when `SampleScene` stops being manageable.
+    88 +
+    89 +## AGENTS Usage
+    90 +- No separate `.init` step is required.
+    91 +- `AGENTS.md` at the repository root is the local instruction file for future agent sessions.
+
+✘ Failed to apply patch
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 파일 삭제 방식이 안 맞아서 전체 덮어쓰기 방식으로 다시 갱신하겠습니다. 내용은 최근 기준선만 남기고 간결하게 정리하겠습
+  니다.
+
+• Ran @'
+  │ # Repository Guidelines
+  │
+  │ … +94 lines
+  └ (no output)
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+• 업데이트했습니다. AGENTS.md를 지금 기준선으로 다시 맞췄습니다.
+
+  바뀐 핵심:
+
+  - 옛 상태였던 컴파일 안 됨, PlayerControls 래퍼 문제 같은 문구 제거
+  - 현재 실제 기준 반영
+      - Assets/_Project/Scripts
+      - Assets/_Project/ScriptableObjs
+      - SampleScene 테스트베드
+      - 현재 동작 기능: 이동 / 회피 / 약공격 / 강공격
+  - 문서 역할 정리
+      - a.md: 설계
+      - DEVLOG.md: 현재 진행
+      - README.md: 입문용
+  - 바로 다음 우선순위도 넣어뒀습니다
+      - Slash1 -> Slash2
+      - 테스트 적
+      - 히트박스/피격/피드백
+      - NavMesh 적 AI
+
+  즉 이제 AGENTS.md도 현재 프로젝트 상태와 모순 없이 맞춰졌습니다.
+

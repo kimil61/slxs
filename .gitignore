@@ -45,6 +45,10 @@
 
 # 문서
 !a.md
+!DESIGN.md
+!ChatLogs/
+!ChatLogs/**
+!ChatLogs/*.md
 
 # 폴더 구조 유지용
 !Assets/

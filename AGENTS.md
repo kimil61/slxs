@@ -1,78 +1,91 @@
-# Repository Guidelines
+﻿# Repository Guidelines
 
 ## Project Context
 - This repo is for the Unity game `色狼下山 (Saek-Nang-Ha-San)`.
-- The main design source is `a.md`.
-- Progress history and implementation notes live in `DEVLOG.md`.
-- `README.md` is the lightweight project overview, not the full source of truth.
+- `a.md` is the design source of truth for architecture, scope, and roadmap.
+- `DEVLOG.md` is the implementation reality log and current task tracker.
+- `README.md` is the lightweight onboarding overview.
 
 ## Current State
-- The project is in an early prototype / architecture stage.
-- Claude-generated foundation code already exists under `Assets/_Project/Scripts/`.
-- Real Unity scene wiring, animation hookup, prefab setup, inspector tuning, and gameplay validation are still largely manual work to be done in the Unity Editor.
-- Current playable scene content is still centered around `Assets/Scenes/SampleScene.unity`.
-- There is only one real scene in build settings right now: `Assets/Scenes/SampleScene.unity`.
+- The project is in late `Phase 1` / early `Phase 2` relative to `a.md`.
+- The active test scene is `Assets/Scenes/SampleScene.unity`.
+- The active code baseline is `Assets/_Project/Scripts/`.
+- The active gameplay tuning assets are in `Assets/_Project/ScriptableObjs/`.
+- Current playable features in-scene:
+  - WASD movement
+  - third-person camera follow
+  - idle / running animation
+  - dodge on `Space`
+  - light attack on left click
+  - heavy attack on `Shift + left click`
 
 ## Source Of Truth
-- Follow `a.md` first for architecture and feature direction.
-- Use `DEVLOG.md` to understand what was attempted or partially implemented.
-- Treat the actual files in `Assets/_Project/Scripts/` as the code baseline, even if docs lag behind.
-- If docs and code diverge, do not silently guess. Call out the mismatch and decide explicitly which side to update.
+- Follow `a.md` for intended design.
+- Follow `DEVLOG.md` for what is actually implemented now.
+- If design and implementation diverge, do not guess silently. Call out the mismatch and decide which document or system to update.
 
-## Code Layout
-- Main gameplay code lives in `Assets/_Project/Scripts/`.
-- Current subfolders:
-  - `Core/`
-  - `Camera/`
-  - `Combat/`
-  - `Player/`
-  - `Enemy/`
-  - `Level/`
-  - `UI/`
-  - `Utils/`
-- Legacy or prototype-era assumptions may still exist in `SampleScene.unity` and some generated scripts.
+## Active Layout
+- Main gameplay code:
+  - `Assets/_Project/Scripts/Core`
+  - `Assets/_Project/Scripts/Camera`
+  - `Assets/_Project/Scripts/Combat`
+  - `Assets/_Project/Scripts/Player`
+  - `Assets/_Project/Scripts/Enemy`
+  - `Assets/_Project/Scripts/Level`
+  - `Assets/_Project/Scripts/UI`
+  - `Assets/_Project/Scripts/Utils`
+- Main tuning assets:
+  - `Assets/_Project/ScriptableObjs/`
+- Do not treat `Assets/Scripts` as the primary gameplay code location.
 
-## Important Technical Notes
-- `Assets/Scripts/` is effectively not the active gameplay code location now.
-- `Assets/_Project/Scripts/Player/PlayerInputHandler.cs` expects a generated `PlayerControls` input wrapper class.
-- The file currently named `Assets/_Project/Scripts/Player/PlayerControls.cs` is not that generated wrapper; it contains a `PlayerController` MonoBehaviour instead.
-- As a result, the current C# project does not cleanly compile yet.
-- `SampleScene.unity` still contains prototype-era component references and should be treated as a migration scene, not a finalized gameplay scene.
+## Current Technical Notes
+- The current C# project compiles.
+- Player control is now driven by `PlayerStateMachine`, not by the old prototype scripts.
+- Gameplay feel is intentionally data-driven through `AttackData`, `DodgeData`, `StaminaData`, and `CombatTuningData`.
+- `SampleScene.unity` is still a working testbed, not a final production scene layout.
 
 ## Working Rules
-- Prefer extending and fixing `Assets/_Project/Scripts/` rather than creating parallel duplicate systems elsewhere.
-- Preserve the architecture direction from `a.md`: core systems stable, gameplay tuning exposed through ScriptableObjects where practical.
-- Do not rewrite large systems casually just because generated code looks rough; first verify whether the issue is scene wiring, inspector data, or a genuine code bug.
-- Before removing or replacing generated code, inspect whether Unity scene objects, prefabs, or serialized references depend on it.
-- Keep comments short and high-signal.
+- Prefer extending and fixing `Assets/_Project/Scripts/` instead of creating parallel duplicate systems.
+- Preserve the architecture direction from `a.md`: stable core, gameplay tuned through ScriptableObjects where practical.
+- Before replacing generated code, verify whether the issue is scene wiring, serialized references, tuning data, Animator setup, or an actual code defect.
+- Keep code comments short and useful.
+- When tuning combat or dodge feel, prefer adjusting ScriptableObject values before rewriting logic.
 
 ## Unity Workflow Expectations
-- Many tasks in this repo require both code changes and Unity Editor setup.
+- Many tasks in this repo require both code work and Unity Editor work.
 - Code-side tasks:
-  - fix compile errors
-  - improve architecture
-  - debug runtime logic
-  - add missing systems
+  - state machine logic
+  - combat logic
+  - input cleanup
+  - bug fixing
+  - AI / level / UI integration
 - Editor-side tasks:
-  - assign Animator Controllers
-  - wire references in inspectors
-  - create prefabs and ScriptableObject assets
-  - configure Input System generation
-  - validate scenes, colliders, NavMesh, and animation timing
-- When a task cannot be completed from code alone, explicitly state what must be done in the Unity Editor.
+  - Animator states and transitions
+  - assigning ScriptableObject references
+  - prefab setup
+  - collider and hitbox setup
+  - NavMesh baking
+  - validating animation timing and scene references
+- If a task cannot be completed from code alone, explicitly state what must be done in the Unity Editor.
 
 ## Documentation Maintenance
-- If architecture changes, update `a.md` only when the intended design changed.
-- If implementation status changed, update `DEVLOG.md`.
-- If onboarding or repo overview changed, update `README.md`.
-- Keep these files in UTF-8.
+- Update `a.md` only when intended design changes.
+- Update `DEVLOG.md` when implementation status or priorities change.
+- Update `README.md` when onboarding information changes.
+- Keep project docs in UTF-8.
 
-## Recommended Next Checks
-- Fix the `PlayerControls` input wrapper mismatch so the project compiles.
-- Audit `SampleScene.unity` against the new architecture in `Assets/_Project/Scripts/`.
-- Decide whether to migrate `SampleScene` forward or create new scenes such as `Boot`, `MainMenu`, `GamePlay`, and `Hub`.
-- Verify which generated systems are code-complete versus only skeletons.
+## Asset And Git Rules
+- Commit Unity `.asset` files together with their `.meta` files.
+- Commit ScriptableObject tuning assets when they are required for scene behavior.
+- Do not remove or regenerate Unity metadata casually.
+
+## Recommended Immediate Priorities
+1. Stabilize `Slash1 -> Slash2` combo behavior.
+2. Add one test enemy and verify hitbox / damage / hit feedback.
+3. Validate hit stop, knockback, camera shake, and audio layering in actual combat.
+4. Move into NavMesh-based enemy integration.
+5. Split out a proper `GamePlay` scene when `SampleScene` stops being manageable.
 
 ## AGENTS Usage
-- No separate `.init` step is required for this repo.
-- `AGENTS.md` at the repository root is enough as the local project instruction file for future agent sessions.
+- No separate `.init` step is required.
+- `AGENTS.md` at the repository root is the local instruction file for future agent sessions.
