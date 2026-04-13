@@ -2,12 +2,12 @@
 
 ## Project Context
 - This repo is for the Unity game `色狼下山 (Saek-Nang-Ha-San)`.
-- `a.md` is the design source of truth for architecture, scope, and roadmap.
+- `DESIGN.md` is the design source of truth for architecture, scope, and roadmap.
 - `DEVLOG.md` is the implementation reality log and current task tracker.
 - `README.md` is the lightweight onboarding overview.
 
 ## Current State
-- The project is in late `Phase 1` / early `Phase 2` relative to `a.md`.
+- The project is in late `Phase 1` / early `Phase 2` relative to `DESIGN.md`.
 - The active test scene is `Assets/Scenes/SampleScene.unity`.
 - The active code baseline is `Assets/_Project/Scripts/`.
 - The active gameplay tuning assets are in `Assets/_Project/ScriptableObjs/`.
@@ -20,7 +20,7 @@
   - heavy attack on `Shift + left click`
 
 ## Source Of Truth
-- Follow `a.md` for intended design.
+- Follow `DESIGN.md` for intended design.
 - Follow `DEVLOG.md` for what is actually implemented now.
 - If design and implementation diverge, do not guess silently. Call out the mismatch and decide which document or system to update.
 
@@ -46,7 +46,7 @@
 
 ## Working Rules
 - Prefer extending and fixing `Assets/_Project/Scripts/` instead of creating parallel duplicate systems.
-- Preserve the architecture direction from `a.md`: stable core, gameplay tuned through ScriptableObjects where practical.
+- Preserve the architecture direction from `DESIGN.md`: stable core, gameplay tuned through ScriptableObjects where practical.
 - Before replacing generated code, verify whether the issue is scene wiring, serialized references, tuning data, Animator setup, or an actual code defect.
 - Keep code comments short and useful.
 - When tuning combat or dodge feel, prefer adjusting ScriptableObject values before rewriting logic.
@@ -69,9 +69,12 @@
 - If a task cannot be completed from code alone, explicitly state what must be done in the Unity Editor.
 
 ## Documentation Maintenance
-- Update `a.md` only when intended design changes.
+- Update `DESIGN.md` only when intended design changes.
 - Update `DEVLOG.md` when implementation status or priorities change.
 - Update `README.md` when onboarding information changes.
+- Read the latest file(s) in `ChatLogs/` at the start of a new session when recent implementation context matters.
+- Add or update the current date's file in `ChatLogs/` at the end of meaningful work sessions so Unity Editor actions, tuning decisions, and next steps are preserved.
+- Treat user requests such as `오늘 작업 정리해줘`, `오늘 작업 기준으로 문서 업데이트해줘`, or similar end-of-session phrasing as a cue to update the relevant project docs, typically `ChatLogs/`, `DEVLOG.md`, and when needed `README.md`, `AGENTS.md`, or `DESIGN.md`.
 - Keep project docs in UTF-8.
 
 ## Asset And Git Rules
@@ -89,3 +92,9 @@
 ## AGENTS Usage
 - No separate `.init` step is required.
 - `AGENTS.md` at the repository root is the local instruction file for future agent sessions.
+- Preferred workflow for new sessions:
+  1. Read `AGENTS.md`
+  2. Read `DEVLOG.md`
+  3. Read `DESIGN.md`
+  4. Read the latest relevant file(s) under `ChatLogs/`
+  5. Continue work from that documented baseline instead of depending on old long chat threads
