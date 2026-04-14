@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
+    private const float DefaultBufferWindow = 0.2f;
+
     public Vector2 MoveInput { get; private set; }
     public Vector2 LookInput { get; private set; }
     public bool JumpPressed => DodgePressed;
@@ -17,6 +19,7 @@ public class PlayerInputHandler : MonoBehaviour
     private InputAction dodgeAction;
     private InputAction attackAction;
     private InputAction interactAction;
+    private float lastAttackPressedTime = float.NegativeInfinity;
 
     private void Awake()
     {
@@ -113,11 +116,30 @@ public class PlayerInputHandler : MonoBehaviour
         if (shiftHeld)
             HeavyAttackPressed = true;
         else
+        {
             AttackPressed = true;
+            lastAttackPressedTime = Time.time;
+        }
     }
 
     private void OnInteractPerformed(InputAction.CallbackContext ctx)
     {
         InteractPressed = true;
+    }
+
+    public bool HasBufferedAttack(float? bufferWindow = null)
+    {
+        float window = Mathf.Max(bufferWindow ?? DefaultBufferWindow, 0f);
+        return AttackPressed || Time.time <= lastAttackPressedTime + window;
+    }
+
+    public bool ConsumeBufferedAttack(float? bufferWindow = null)
+    {
+        if (!HasBufferedAttack(bufferWindow))
+            return false;
+
+        AttackPressed = false;
+        lastAttackPressedTime = float.NegativeInfinity;
+        return true;
     }
 }

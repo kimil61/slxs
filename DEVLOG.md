@@ -301,3 +301,35 @@
 2. `moveRecoveryTime`을 기준으로 이동 복귀 체감이 자연스러운지 확인
 3. `comboWindowStartTime` / `comboWindowEndTime`이 `Slash1 -> Slash2` 체감 입력 구간과 맞는지 확인
 4. `DodgeData`도 공격과 같은 감각으로 더 세분화할지 판단
+
+---
+
+## 2026-04-15 추가 업데이트 — `Slash1 -> Slash2` 콤보 원인 확인 및 보강
+
+### 확인 결과
+- 원인은 설정만의 문제가 아니라 코드와 Animator 전이 타이밍이 함께 어긋난 구조였다.
+- 코드상 문제:
+  - 경공격 시작 입력이 프레임성 bool이라 콤보 입력을 조금 빨리 누르면 누락될 수 있었다.
+  - `PlayerLightAttackState`가 콤보 입력을 받아도 다음 공격 상태 전환을 공격 종료 시점까지 미뤘다.
+  - 경공격 단계 구분은 `CurrentComboIndex`로만 관리되고, Animator에는 여전히 `Attack` 트리거 하나만 전달했다.
+- Animator 쪽 문제:
+  - `Slash1 -> Slash2` 전이의 `Exit Time`이 비정상적으로 커서 실제 콤보 타이밍과 맞지 않았다.
+  - `Slash1 -> Idle` 복귀도 너무 빨라서 1타 후 자연스럽게 2타로 이어지기 전에 빠질 수 있었다.
+
+### 이번 작업에서 바꾼 것
+- `PlayerInputHandler`에 공격 입력 버퍼를 추가했다.
+- `PlayerIdleState`, `PlayerMoveState`, `PlayerDodgeState`, `PlayerLightAttackState`가 버퍼된 공격 입력을 소비하도록 변경했다.
+- `PlayerLightAttackState`는 콤보 입력이 큐에 들어오면 `comboWindowEndTime` 시점에 바로 다음 공격 상태로 넘어가도록 수정했다.
+- 로컬 `PlayerAnimator.controller` 기준으로 다음 전이 시간을 조정했다.
+  - `Slash1 -> Slash2`: `Exit Time 0.62`
+  - `Slash1 -> Idle`: `Exit Time 1`
+  - `Slash2 -> Idle`: `Exit Time 1`
+
+### 주의
+- 현재 저장소 기준으로 `Assets/PlayerAnimator.controller`는 git 추적 자산이 아니다.
+- 따라서 위 Animator 전이 수정은 현재 로컬 작업 폴더 기준 변경이며, Unity Editor에서 같은 설정이 실제로 유지되는지 확인이 필요하다.
+
+### 바로 확인할 것
+1. Unity Editor에서 `Slash1` 도중 2타 입력을 약간 일찍 눌러도 `Slash2`로 안정적으로 이어지는지 확인
+2. `Slash1` 종료 전에 Idle로 튀지 않는지 확인
+3. 2타 전이 시점과 `slash2AttackData.asset`의 히트박스 타이밍 체감이 맞는지 확인

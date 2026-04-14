@@ -6,12 +6,14 @@ public class PlayerLightAttackState : IPlayerState
     private AttackData currentAttack;
     private bool hitboxActive;
     private bool comboQueued;
+    private bool comboTriggered;
 
     public void Enter(PlayerStateMachine player)
     {
         timer = 0f;
         hitboxActive = false;
         comboQueued = false;
+        comboTriggered = false;
 
         if (player.lightAttacks == null || player.lightAttacks.Length == 0)
         {
@@ -60,8 +62,14 @@ public class PlayerLightAttackState : IPlayerState
 
         if (timer >= currentAttack.comboWindowStartTime && timer <= currentAttack.comboWindowEndTime)
         {
-            if (player.Input.AttackPressed)
+            if (player.ConsumeBufferedAttackInput())
                 comboQueued = true;
+        }
+
+        if (comboQueued && !comboTriggered && timer >= currentAttack.comboWindowEndTime)
+        {
+            StartNextCombo(player);
+            return;
         }
 
         if (timer >= currentAttack.dodgeCancelTime)
@@ -84,15 +92,13 @@ public class PlayerLightAttackState : IPlayerState
 
         if (timer >= totalDuration)
         {
-            CleanUp(player);
-
             if (comboQueued && player.CurrentComboIndex < player.lightAttacks.Length - 1)
             {
-                player.CurrentComboIndex++;
-                player.TransitionTo(player.LightAttackState);
+                StartNextCombo(player);
             }
             else
             {
+                CleanUp(player);
                 player.CurrentComboIndex = 0;
                 player.TransitionTo(player.Input.MoveInput.sqrMagnitude > 0.01f ? player.MoveState : player.IdleState);
             }
@@ -109,5 +115,16 @@ public class PlayerLightAttackState : IPlayerState
         if (hitboxActive && player.WeaponHitbox != null)
             player.WeaponHitbox.Deactivate();
         hitboxActive = false;
+    }
+
+    private void StartNextCombo(PlayerStateMachine player)
+    {
+        if (comboTriggered || player.CurrentComboIndex >= player.lightAttacks.Length - 1)
+            return;
+
+        comboTriggered = true;
+        CleanUp(player);
+        player.CurrentComboIndex++;
+        player.TransitionTo(player.LightAttackState);
     }
 }

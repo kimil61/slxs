@@ -42,6 +42,7 @@ public class PlayerStateMachine : MonoBehaviour
     [HideInInspector] public bool IsGrounded;
     [HideInInspector] public bool IsInvincible;
     [HideInInspector] public int CurrentComboIndex;
+    public float InputBufferWindow => combatTuning != null ? combatTuning.inputBufferWindow : 0.2f;
 
     // ── 상태 인스턴스 (재사용) ──
     public readonly PlayerIdleState IdleState = new();
@@ -138,5 +139,15 @@ public class PlayerStateMachine : MonoBehaviour
     public void Move(Vector3 direction, float speed)
     {
         Controller.Move(direction * speed * Time.deltaTime);
+    }
+
+    public bool HasBufferedAttackInput()
+    {
+        return Input != null && Input.HasBufferedAttack(InputBufferWindow);
+    }
+
+    public bool ConsumeBufferedAttackInput()
+    {
+        return Input != null && Input.ConsumeBufferedAttack(InputBufferWindow);
     }
 }

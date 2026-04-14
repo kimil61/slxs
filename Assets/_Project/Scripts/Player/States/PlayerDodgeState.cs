@@ -33,7 +33,7 @@ public class PlayerDodgeState : IPlayerState
         float moveSpeed = (data.distance / data.totalDuration) * curveSpeed;
         player.Move(dodgeDirection, moveSpeed);
 
-        if (normalizedTime >= data.cancelWindowStart && player.Input.AttackPressed)
+        if (normalizedTime >= data.cancelWindowStart && player.ConsumeBufferedAttackInput())
         {
             player.TransitionTo(player.LightAttackState);
             return;

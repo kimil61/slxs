@@ -33,7 +33,7 @@ public class PlayerIdleState : IPlayerState
                 return;
             }
 
-            if (player.Input.AttackPressed)
+            if (player.ConsumeBufferedAttackInput())
             {
                 player.TransitionTo(player.LightAttackState);
                 return;
